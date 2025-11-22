@@ -1,0 +1,46 @@
+/* System.css imported in main.jsx */
+
+/* Ensure Chicago font is used globally */
+* {
+  font-family: 'Chicago', 'Geneva', 'MS Sans Serif', sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+input,
+textarea,
+select,
+button {
+  font-family: 'Chicago', 'Geneva', 'MS Sans Serif', sans-serif;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+.window-pane {
+  -webkit-overflow-scrolling: touch;
+}
+
+.window,
+.icon,
+.title-bar {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-perspective: 1000;
+  perspective: 1000;
+}
+
+.skills-label {
+  font-size: 22px;
+}

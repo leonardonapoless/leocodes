@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <title>Arrow Upper Right Bold</title>
+  <g transform="rotate(45 16 16)">
+    <path d="M14,30 v-18 h-8 v-2 h2 v-2 h2 v-2 h2 v-2 h2 v-2 h4 v2 h2 v2 h2 v2 h2 v2 h2 v2 h-8 v18 h-4 z" fill="#000000"/>
+  </g>
+</svg>

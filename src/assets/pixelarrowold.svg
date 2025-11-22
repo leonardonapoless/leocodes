@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="0 0 78 78" enable-background="new 0 0 78 78" xml:space="preserve">
+<title>Arrow Upper Right</title>
+<desc>Created with Sketch.</desc>
+<g transform="rotate(45, 39, 39)">
+	<polygon points="24,30 30,30 30,24 24,24 24,30  "/>
+	<polygon points="18,36 24,36 24,30 18,30 18,36  "/>
+	<polygon points="12,42 18,42 18,36 12,36 12,42  "/>
+	<path d="M42,18v-6h-6v6h-6v6h6c0,14,0,28,0,42h6c0-14,0-28,0-42h6v-6H42L42,18z"/>
+	<polygon points="48,24 48,30 54,30 54,24 48,24  "/>
+	<polygon points="54,30 54,36 60,36 60,30 54,30  "/>
+	<polygon points="60,36 60,42 66,42 66,36 60,36  "/>
+</g>
+</svg>

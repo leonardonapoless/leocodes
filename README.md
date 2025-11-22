@@ -1,24 +1,34 @@
-# LeoCodes - Portfolio ️
+# LeoCodes 
 
-Hey! Welcome to my retro Mac OS portfolio.
+Welcome to my portfolio. It's a website, but it thinks it's a Macintosh from 1997.
 
-I built this because I miss the aesthetic of System 7/8. It's a React app powered by Vite, using `system.css` for the looks.
+I built this because I miss the days when computers made satisfying clicking sounds and didn't track your every move. It's built with **React** and **Vite**, but styled to look like System 7/8 using the awesome `system.css` library.
 
-## Stuff to do here:
-- **About Me**: A bit about who I am.
-- **Projects**: Check out my iOS and web work.
-- **Contact Me**: Send me an email (it actually works!).
-- **Games**: Yes, you can play DOOM.
+## What works?
+Pretty much everything you see.
+- **Windows**: Drag them, resize them, close them. They behave like you expect.
+- **Doom**: Yeah, the shareware version of Doom is in here. Double-click the "Games" folder. You're welcome.
+- **Files**: The icons actually do things. "About Me" opens a window, "Projects" shows my work.
+- **Sound**: It clicks and beeps. (You can mute your tab if you hate fun).
 
-## Running it
+## Tech Stack
+- React 
+- Vite
+- System.css (for the retro vibes)
+- EmailJS (for the contact form)
+
+## Running it locally
+If you want to poke around the code:
+
 ```bash
+git clone https://github.com/leonardonapoless/leocodes.git
+cd leocodes
 npm install
 npm run dev
 ```
 
-## Notes
-- Windows are draggable and resizable.
-- Double-click title bars to shade them.
-- Drag icons around if you want.
+## Credits
+- **Design**: Myself, and Apple (obviously)
+- **CSS**: [System.css](https://github.com/sakofchit/system.css)
+- **Doom**: Cornelius Diekmann. https://github.com/diekmann/wasm-fizzbuzz/tree/main/doom
 
-Enjoy the nostalgia!

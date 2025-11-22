@@ -44,7 +44,7 @@ const Projects = ({ onOpenVideo, onOpenBrowser }) => {
             technologies: ['HTML', 'CSS', 'JavaScript', 'React', 'Vite'],
             description: 'My personal Classic Mac OS style portfolio website built with React and Vite.',
             githubLink: 'https://github.com/leonardonapoless/leocodes',
-            demoLink: 'https://leocodes.kinsta.page'
+            demoLink: 'https://leocodes.vercel.app'
         }
     ];
 

@@ -1,20 +1,21 @@
+import wopn from '../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/wopn.mp3';
+import wcls from '../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/wcls.mp3';
+import mnuo from '../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/mnuo.mp3';
+import mnuc from '../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/mnuc.mp3';
+import mnui from '../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/mnui.mp3';
+import btnp from '../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/btnp.mp3';
+import btnr from '../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/btnr.mp3';
+import fsel from '../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/fsel.mp3';
+import flap from '../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/flap.mp3';
+import sbap from '../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/sbap.mp3';
+import sbar from '../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/sbar.mp3';
+import sbth from '../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/sbth.mp3';
+import sbtp from '../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/sbtp.mp3';
+
 const soundFiles = {
-    wopn: () => import('../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/wopn.mp3'),
-    wcls: () => import('../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/wcls.mp3'),
-    mnuo: () => import('../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/mnuo.mp3'),
-    mnuc: () => import('../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/mnuc.mp3'),
-    mnui: () => import('../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/mnui.mp3'),
-    btnp: () => import('../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/btnp.mp3'),
-    btnr: () => import('../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/btnr.mp3'),
-    fsel: () => import('../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/fsel.mp3'),
-    flap: () => import('../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/flap.mp3'),
-    sbap: () => import('../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/sbap.mp3'),
-    sbar: () => import('../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/sbar.mp3'),
-    sbth: () => import('../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/sbth.mp3'),
-    sbtp: () => import('../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/sbtp.mp3'),
+    wopn, wcls, mnuo, mnuc, mnui, btnp, btnr, fsel, flap, sbap, sbar, sbth, sbtp
 };
 
-// volume settings for each sound 0.0 = silent, 1.0 = full volume
 const soundVolumes = {
     wopn: 0.2,
     wcls: 0.2,
@@ -31,32 +32,54 @@ const soundVolumes = {
     sbtp: 0.15,
 };
 
-const audioCache = {};
+const audioCache = {}
 
-export const playSound = async (soundName) => {
-    try {
-        if (!soundFiles[soundName]) {
-            console.warn(`sound not found: ${soundName}`);
-            return;
-        }
+const getAudio = (name) => {
+    if (audioCache[name]) return audioCache[name]
 
-        const volume = soundVolumes[soundName] ?? 0.3; // default to 0.3 
-
-        // check cache first
-        if (!audioCache[soundName]) {
-            const module = await soundFiles[soundName]();
-            audioCache[soundName] = new Audio(module.default);
-            audioCache[soundName].volume = volume;
-        }
-
-        const audio = audioCache[soundName].cloneNode();
-        audio.volume = volume;
-        audio.play().catch(e => {
-            console.debug(`sound play blocked: ${soundName}`, e);
-        });
-    } catch (error) {
-        console.error(`error playing sound ${soundName}:`, error);
+    // fallback if worker hasn't finished
+    if (soundFiles[name]) {
+        audioCache[name] = new Audio(soundFiles[name])
     }
-};
 
-export default { playSound };
+    return audioCache[name]
+}
+
+export const playSound = (name) => {
+    try {
+        const base = getAudio(name)
+        if (!base) return
+
+        const audio = base.cloneNode()
+        audio.volume = soundVolumes[name] ?? 0.3
+
+        audio.play().catch(() => {
+            // ignore autoplay blocks
+        })
+    } catch (err) {
+        console.error('play error:', name, err)
+    }
+}
+
+export const preloadSounds = () => {
+    if (!window.Worker) {
+        Object.keys(soundFiles).forEach(key => {
+            const audio = getAudio(key)
+            if (audio) audio.load()
+        })
+        return
+    }
+
+    const worker = new Worker(new URL('./audioWorker.js', import.meta.url), { type: 'module' })
+
+    worker.onmessage = ({ data }) => {
+        const { key, blob } = data
+        const audio = new Audio(URL.createObjectURL(blob))
+        audioCache[key] = audio
+        audio.load()
+    }
+
+    worker.postMessage(soundFiles)
+}
+
+export default { playSound, preloadSounds }

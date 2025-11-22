@@ -2,7 +2,7 @@
 
 Welcome to my portfolio. It's a website, but it thinks it's a Macintosh from 1997.
 
-I built this because I miss the days when computers made satisfying clicking sounds and didn't track your every move. It's built with **React** and **Vite**, but styled to look like System 7/8 using the awesome `system.css` library.
+I built this because I miss the days when computers made satisfying clicking sounds and didn't track your every move. It's built with **React**, but styled to look like System 7/8 using the awesome `system.css` library.
 
 ## What works?
 Pretty much everything you see.

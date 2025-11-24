@@ -1,17 +1,28 @@
 import { useState, useRef, useEffect } from 'react';
 import { playSound } from '../../utils/soundManager';
 
-const Icon = ({ label, iconSrc, onDoubleClick, x, y, isSelected, onSelect, onDrag, size = 48 }) => {
+interface IconProps {
+    label: string;
+    iconSrc?: string;
+    onDoubleClick?: () => void;
+    x: number;
+    y: number;
+    isSelected?: boolean;
+    onSelect: (e: React.MouseEvent) => void;
+    onDrag?: (pos: { x: number; y: number }) => void;
+    size?: number;
+}
+
+const Icon = ({ label, iconSrc, onDoubleClick, x, y, isSelected, onSelect, onDrag, size = 48 }: IconProps) => {
     const [isDragging, setIsDragging] = useState(false);
     const dragOffset = useRef({ x: 0, y: 0 });
 
     const lastClickTime = useRef(0);
 
-    const handleMouseDown = (e) => {
+    const handleMouseDown = (e: React.MouseEvent) => {
         if (e.button !== 0) return;
 
-        // custom double click detection because ondoubleclick was being finicky
-        // tracks time between clicks and triggers action if < 300ms
+        // double click detection
         const currentTime = new Date().getTime();
         const timeDiff = currentTime - lastClickTime.current;
 
@@ -31,7 +42,7 @@ const Icon = ({ label, iconSrc, onDoubleClick, x, y, isSelected, onSelect, onDra
     };
 
     useEffect(() => {
-        const handleMouseMove = (e) => {
+        const handleMouseMove = (e: globalThis.MouseEvent) => {
             if (isDragging && onDrag) {
                 onDrag({
                     x: e.clientX - dragOffset.current.x,
@@ -64,7 +75,7 @@ const Icon = ({ label, iconSrc, onDoubleClick, x, y, isSelected, onSelect, onDra
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                width: `${Math.max(80, size + 20)}px`, // add padding around icon
+                width: `${Math.max(80, size + 20)}px`,
                 cursor: 'default',
                 zIndex: isSelected ? 2 : 1
             }}
@@ -80,7 +91,7 @@ const Icon = ({ label, iconSrc, onDoubleClick, x, y, isSelected, onSelect, onDra
                 backgroundSize: 'contain',
                 backgroundRepeat: 'no-repeat',
                 border: iconSrc ? 'none' : '1px solid #000',
-                filter: isSelected ? 'invert(100%)' : 'none' // invert colors when selected
+                filter: isSelected ? 'invert(100%)' : 'none'
             }}>
                 {!iconSrc && <div style={{ width: '100%', height: '100%', border: '1px solid white', boxSizing: 'border-box' }}></div>}
             </div>

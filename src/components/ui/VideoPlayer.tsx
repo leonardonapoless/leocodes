@@ -1,7 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
 
-const VideoPlayer = ({ videoId }) => {
-    const playerRef = useRef(null);
+declare global {
+    interface Window {
+        YT: any;
+        onYouTubeIframeAPIReady: () => void;
+    }
+}
+
+interface VideoPlayerProps {
+    videoId: string;
+}
+
+const VideoPlayer = ({ videoId }: VideoPlayerProps) => {
+    const playerRef = useRef<any>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [volume, setVolume] = useState(50);
     const [currentTime, setCurrentTime] = useState(0);
@@ -13,7 +24,9 @@ const VideoPlayer = ({ videoId }) => {
             const tag = document.createElement('script');
             tag.src = "https://www.youtube.com/iframe_api";
             const firstScriptTag = document.getElementsByTagName('script')[0];
-            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+            if (firstScriptTag && firstScriptTag.parentNode) {
+                firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+            }
         }
 
         const initPlayer = () => {
@@ -51,7 +64,7 @@ const VideoPlayer = ({ videoId }) => {
     }, [videoId]);
 
     useEffect(() => {
-        let interval;
+        let interval: NodeJS.Timeout;
         if (isPlaying) {
             interval = setInterval(() => {
                 if (playerRef.current && playerRef.current.getCurrentTime) {
@@ -62,14 +75,14 @@ const VideoPlayer = ({ videoId }) => {
         return () => clearInterval(interval);
     }, [isPlaying]);
 
-    const onPlayerReady = (event) => {
+    const onPlayerReady = (event: any) => {
         setIsReady(true);
         setDuration(event.target.getDuration());
         event.target.setVolume(volume);
         event.target.playVideo();
     };
 
-    const onPlayerStateChange = (event) => {
+    const onPlayerStateChange = (event: any) => {
         setIsPlaying(event.data === window.YT.PlayerState.PLAYING);
     };
 
@@ -87,18 +100,17 @@ const VideoPlayer = ({ videoId }) => {
         playerRef.current.stopVideo();
         setIsPlaying(false);
         setCurrentTime(0);
-        // Force update if needed, but state change should trigger re-render
     };
 
-    const handleVolumeChange = (e) => {
-        const newVolume = e.target.value;
+    const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newVolume = Number(e.target.value);
         setVolume(newVolume);
         if (playerRef.current) {
             playerRef.current.setVolume(newVolume);
         }
     };
 
-    const handleSeek = (e) => {
+    const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newTime = parseFloat(e.target.value);
         setCurrentTime(newTime);
         if (playerRef.current) {
@@ -106,7 +118,7 @@ const VideoPlayer = ({ videoId }) => {
         }
     };
 
-    const formatTime = (time) => {
+    const formatTime = (time: number) => {
         const minutes = Math.floor(time / 60);
         const seconds = Math.floor(time % 60);
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
@@ -116,12 +128,12 @@ const VideoPlayer = ({ videoId }) => {
         <div
             style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', background: '#000', position: 'relative' }}
             onMouseEnter={() => {
-                const controls = document.querySelector('.video-controls');
+                const controls = document.querySelector('.video-controls') as HTMLElement;
                 if (controls) controls.style.opacity = '1';
             }}
             onMouseLeave={() => {
                 if (isPlaying) {
-                    const controls = document.querySelector('.video-controls');
+                    const controls = document.querySelector('.video-controls') as HTMLElement;
                     if (controls) controls.style.opacity = '0';
                 }
             }}

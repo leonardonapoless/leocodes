@@ -1,3 +1,4 @@
+import React from 'react';
 import swiftIcon from '../assets/swift.svg';
 import javaIcon from '../assets/java.svg';
 import javascriptIcon from '../assets/javascript.svg';
@@ -6,8 +7,22 @@ import cssIcon from '../assets/css.svg';
 import reactIcon from '../assets/react.svg';
 import viteIcon from '../assets/Vite.js.svg';
 
-const Projects = ({ onOpenVideo, onOpenBrowser }) => {
-    const iosProjects = [
+interface Project {
+    id: number;
+    name: string;
+    technologies: string[];
+    description: string;
+    githubLink: string;
+    demoLink: string;
+}
+
+interface ProjectsProps {
+    onOpenVideo?: (videoId: string, title: string) => void;
+    onOpenBrowser?: (url: string, title: string) => void;
+}
+
+const Projects = ({ onOpenVideo, onOpenBrowser }: ProjectsProps) => {
+    const iosProjects: Project[] = [
         {
             id: 1, name: 'PAMS (Platform Agnostic Music Search)',
             technologies: ['Swift'],
@@ -24,7 +39,7 @@ const Projects = ({ onOpenVideo, onOpenBrowser }) => {
         },
     ];
 
-    const otherProjects = [
+    const otherProjects: Project[] = [
         {
             id: 3, name: 'Sacolão Rodrigues',
             technologies: ['HTML', 'CSS', 'JavaScript'],
@@ -48,12 +63,12 @@ const Projects = ({ onOpenVideo, onOpenBrowser }) => {
         }
     ];
 
-    const extractYouTubeVideoId = (url) => {
+    const extractYouTubeVideoId = (url: string) => {
         const patterns = [
-            { match: 'youtube.com/shorts/', extract: (u) => u.split('shorts/')[1].split('?')[0] },
-            { match: 'v=', extract: (u) => u.split('v=')[1].split('&')[0] },
-            { match: 'youtu.be/', extract: (u) => u.split('youtu.be/')[1].split('?')[0] },
-            { match: 'youtube.com/embed/', extract: (u) => u.split('embed/')[1].split('?')[0] }
+            { match: 'youtube.com/shorts/', extract: (u: string) => u.split('shorts/')[1].split('?')[0] },
+            { match: 'v=', extract: (u: string) => u.split('v=')[1].split('&')[0] },
+            { match: 'youtu.be/', extract: (u: string) => u.split('youtu.be/')[1].split('?')[0] },
+            { match: 'youtube.com/embed/', extract: (u: string) => u.split('embed/')[1].split('?')[0] }
         ];
 
         for (const pattern of patterns) {
@@ -64,7 +79,7 @@ const Projects = ({ onOpenVideo, onOpenBrowser }) => {
         return '';
     };
 
-    const handleDemoClick = (e, project) => {
+    const handleDemoClick = (e: React.MouseEvent, project: Project) => {
         const isYouTubeLink = project.demoLink.includes('youtube.com') || project.demoLink.includes('youtu.be');
 
         if (isYouTubeLink) {
@@ -77,17 +92,15 @@ const Projects = ({ onOpenVideo, onOpenBrowser }) => {
                 window.open(project.demoLink, '_blank');
             }
         } else {
-            // for non-video links, try to open in internal browser
             if (onOpenBrowser) {
                 e.preventDefault();
                 onOpenBrowser(project.demoLink, project.name);
             }
-            // if no handler provided, let default anchor behavior happen (open in new tab)
         }
     };
 
-    const getTechnologyIcon = (techName) => {
-        const iconMap = {
+    const getTechnologyIcon = (techName: string) => {
+        const iconMap: Record<string, string | null> = {
             'Swift': swiftIcon,
             'SwiftUI': swiftIcon,
             'MVVM': null,
@@ -102,7 +115,7 @@ const Projects = ({ onOpenVideo, onOpenBrowser }) => {
         return iconMap[techName] || null;
     };
 
-    const renderProjectList = (projects, openByDefault = true) => (
+    const renderProjectList = (projects: Project[], openByDefault = true) => (
         <ul className="tree-view">
             {projects.map(project => (
                 <li key={project.id}>
@@ -113,7 +126,7 @@ const Projects = ({ onOpenVideo, onOpenBrowser }) => {
                                 {project.technologies && (
                                     <span style={{ marginLeft: '4px', display: 'inline-block' }}>
                                         {' '}
-                                        {project.technologies.map((tech, index) => {
+                                        {project.technologies.map((tech: string, index: number) => {
                                             const icon = getTechnologyIcon(tech);
                                             let iconFilter = 'grayscale(100%) contrast(2) brightness(0.8)';
 

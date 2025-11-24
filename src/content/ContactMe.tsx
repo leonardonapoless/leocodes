@@ -11,7 +11,7 @@ const ContactMe = () => {
     const [status, setStatus] = useState({ type: '', message: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleChange = (e) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
@@ -19,18 +19,16 @@ const ContactMe = () => {
         }));
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
         setStatus({ type: '', message: '' });
 
         try {
-            // emailjs configuration
             const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
             const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
             const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
-            // initialize emailjs with public key
             emailjs.init(publicKey);
 
             const templateParams = {
@@ -43,14 +41,14 @@ const ContactMe = () => {
                 })
             };
 
-            const response = await emailjs.send(serviceId, templateId, templateParams);
+            await emailjs.send(serviceId, templateId, templateParams);
 
             setStatus({
                 type: 'success',
                 message: 'Message sent successfully.'
             });
             setFormData({ name: '', email: '', message: '' });
-        } catch (error) {
+        } catch (error: any) {
             console.error('Email sending failed:', error);
             console.error('Error details:', error.text || error.message);
             setStatus({
@@ -138,7 +136,7 @@ const ContactMe = () => {
                                 placeholder="Type your message here..."
                                 required
                                 disabled={isSubmitting}
-                                rows="8"
+                                rows={8}
                                 style={{ width: '100%', resize: 'vertical' }}
                             />
                         </div>

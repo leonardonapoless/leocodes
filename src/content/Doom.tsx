@@ -5,13 +5,13 @@ const Doom = () => {
     const doom_screen_width = 320 * 2;
     const doom_screen_height = 200 * 2;
 
-    const readWasmString = useCallback((memory, offset, length) => {
+    const readWasmString = useCallback((memory: WebAssembly.Memory, offset: number, length: number) => {
         const bytes = new Uint8Array(memory.buffer, offset, length);
         return new TextDecoder('utf8').decode(bytes);
     }, []);
 
-    const appendOutput = useCallback((memory, style) => {
-        return function (offset, length) {
+    const appendOutput = useCallback((memory: WebAssembly.Memory, style: string) => {
+        return function (offset: number, length: number) {
             const string = readWasmString(memory, offset, length);
             console.log(`Doom [${style}]:`, string);
         };
@@ -21,21 +21,23 @@ const Doom = () => {
         return performance.now();
     }, []);
 
-    const drawCanvas = useCallback((memory, canvas, ptr) => {
+    const drawCanvas = useCallback((memory: WebAssembly.Memory, canvas: HTMLCanvasElement, ptr: number) => {
         const doom_screen = new Uint8ClampedArray(memory.buffer, ptr, doom_screen_width * doom_screen_height * 4);
         const render_screen = new ImageData(doom_screen, doom_screen_width, doom_screen_height);
         const ctx = canvas.getContext('2d');
-        ctx.putImageData(render_screen, 0, 0);
+        if (ctx) {
+            ctx.putImageData(render_screen, 0, 0);
+        }
     }, [doom_screen_width, doom_screen_height]);
 
-    const getImportObject = useCallback(({ memory, canvas }) => {
+    const getImportObject = useCallback(({ memory, canvas }: { memory: WebAssembly.Memory; canvas: HTMLCanvasElement }) => {
         return {
             js: {
                 js_console_log: appendOutput(memory, "log"),
                 js_stdout: appendOutput(memory, "stdout"),
                 js_stderr: appendOutput(memory, "stderr"),
                 js_milliseconds_since_start: getMilliseconds,
-                js_draw_screen: (ptr) => drawCanvas(memory, canvas, ptr),
+                js_draw_screen: (ptr: number) => drawCanvas(memory, canvas, ptr),
             },
             env: {
                 memory: memory
@@ -43,7 +45,7 @@ const Doom = () => {
         };
     }, [appendOutput, getMilliseconds, drawCanvas]);
 
-    const doomKeyCode = useCallback((keyCode) => {
+    const doomKeyCode = useCallback((keyCode: number) => {
         switch (keyCode) {
             case 8: return 127;             // backspace
             case 17: return (0x80 + 0x1d);  // rctrl
@@ -70,24 +72,24 @@ const Doom = () => {
         }
     }, []);
 
-    const onKeyDown = useCallback((keyCode, instance) => {
+    const onKeyDown = useCallback((keyCode: number, instance: WebAssembly.Instance) => {
         if (instance) {
-            instance.exports.add_browser_event(0, doomKeyCode(keyCode));
+            (instance.exports.add_browser_event as Function)(0, doomKeyCode(keyCode));
         }
     }, [doomKeyCode]);
 
-    const onKeyUp = useCallback((keyCode, instance) => {
+    const onKeyUp = useCallback((keyCode: number, instance: WebAssembly.Instance) => {
         if (instance) {
-            instance.exports.add_browser_event(1, doomKeyCode(keyCode));
+            (instance.exports.add_browser_event as Function)(1, doomKeyCode(keyCode));
         }
     }, [doomKeyCode]);
 
-    const onStep = useCallback((instance) => {
-        instance.exports.doom_loop_step();
+    const onStep = useCallback((instance: WebAssembly.Instance) => {
+        (instance.exports.doom_loop_step as Function)();
     }, []);
 
-    const onInit = useCallback((instance) => {
-        instance.exports.main();
+    const onInit = useCallback((instance: WebAssembly.Instance) => {
+        (instance.exports.main as Function)();
     }, []);
 
     const memoryConfig = useMemo(() => ({ initial: 108 }), []);

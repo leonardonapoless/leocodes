@@ -1,4 +1,4 @@
-self.onmessage = async ({ data: files }) => {
+self.onmessage = async ({ data: files }: MessageEvent<Record<string, string>>) => {
     for (const [key, url] of Object.entries(files)) {
         try {
             const res = await fetch(url)

@@ -2,10 +2,15 @@ import { useState, useEffect, useRef } from 'react';
 import { playSound } from '../../utils/soundManager';
 import { getMenus } from '../../constants/menuConfig';
 
-const MenuBar = ({ onOpenWindow }) => {
+interface MenuBarProps {
+  onOpenWindow: (key: string) => void;
+  onCrash?: () => void;
+}
+
+const MenuBar = ({ onOpenWindow, onCrash }: MenuBarProps) => {
   const [time, setTime] = useState(new Date());
-  const [activeMenu, setActiveMenu] = useState(null);
-  const menuRef = useRef(null);
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
@@ -13,19 +18,19 @@ const MenuBar = ({ onOpenWindow }) => {
   }, []);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
+    const handleClickOutside = (event: globalThis.MouseEvent) => {
+      if (menuRef.current && event.target instanceof Node && !menuRef.current.contains(event.target)) {
         if (activeMenu) {
           playSound('mnuc');
+          setActiveMenu(null);
         }
-        setActiveMenu(null);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const menus = getMenus(onOpenWindow, activeMenu);
+  const menus = getMenus(onOpenWindow, activeMenu, onCrash);
 
   return (
     <div
@@ -46,7 +51,7 @@ const MenuBar = ({ onOpenWindow }) => {
         alignItems: 'center',
         padding: '0 10px',
         background: '#fff',
-        height: '32px', // thick and round menu bar like classic mac os
+        height: '32px',
         userSelect: 'none',
         fontFamily: 'Chicago, sans-serif'
       }}
@@ -97,7 +102,7 @@ const MenuBar = ({ onOpenWindow }) => {
                 flexDirection: 'column',
                 padding: '0'
               }}>
-                {menu.items.map((item, index) => {
+                {menu.items.map((item: any, index: number) => {
                   if (item.type === 'separator') {
                     return <div key={index} style={{ borderTop: '1px dotted #000', margin: '4px 0' }} />;
                   }
@@ -118,14 +123,14 @@ const MenuBar = ({ onOpenWindow }) => {
                         justifyContent: 'space-between',
                         alignItems: 'center'
                       }}
-                      onMouseEnter={(e) => {
+                      onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => {
                         if (!item.disabled) {
                           playSound('mnui');
                           e.currentTarget.style.background = '#000';
                           e.currentTarget.style.color = '#fff';
                         }
                       }}
-                      onMouseLeave={(e) => {
+                      onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => {
                         if (!item.disabled) {
                           e.currentTarget.style.background = '#fff';
                           e.currentTarget.style.color = '#000';

@@ -3,14 +3,17 @@ import logo from '../../assets/leocodes_logo_bw_big.svg';
 import bootChime from '../../assets/audio/StartupPowerMacPCI.wav';
 import { playSound } from '../../utils/soundManager';
 
-const BootSplash = ({ onComplete }) => {
+interface BootSplashProps {
+    onComplete: () => void;
+}
+
+const BootSplash = ({ onComplete }: BootSplashProps) => {
     const [isVisible, setIsVisible] = useState(true);
     const [hasStarted, setHasStarted] = useState(false);
     const [showContent, setShowContent] = useState(false);
-    const audioRef = useRef(null);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
 
     useEffect(() => {
-        // preload audio on mount
         const audio = new Audio(bootChime);
         audio.volume = 0.6; // reduce volume to 60%
         audio.load();
@@ -29,7 +32,6 @@ const BootSplash = ({ onComplete }) => {
         const audio = audioRef.current;
         if (!audio) return;
 
-        // play the preloaded audio
         audio.play();
 
         setTimeout(() => {

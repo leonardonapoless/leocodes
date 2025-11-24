@@ -1,20 +1,22 @@
 import { useRef, useState, useEffect } from 'react';
-// import reloadIcon from '../../assets/refresh.svg';
 import homeIcon from '../../assets/home.svg';
 import openURLIcon from '../../assets/pixelarrow.svg';
 
-const Browser = ({ url }) => {
-    const iframeRef = useRef(null);
-    const [scale, setScale] = useState(0.75); // scale down to simulate higher resolution
+interface BrowserProps {
+    url: string;
+}
+
+const Browser = ({ url }: BrowserProps) => {
+    const iframeRef = useRef<HTMLIFrameElement>(null);
+    const [scale] = useState(0.75); // scale down to simulate higher resolution
     const [hasError, setHasError] = useState(false);
 
     useEffect(() => {
         setHasError(false);
 
-        // set a timeout to check if iframe loaded
         const timer = setTimeout(() => {
             try {
-                // try to access iframe content to detect blocking
+                // check for blocking
                 if (iframeRef.current && iframeRef.current.contentWindow) {
                     iframeRef.current.contentWindow.location.href;
                 }
@@ -36,18 +38,6 @@ const Browser = ({ url }) => {
         }
     };
 
-    const handleReload = () => {
-        setHasError(false);
-        try {
-            iframeRef.current.contentWindow.location.reload();
-        } catch (e) {
-            // fallback if cross-origin blocks reload
-            if (iframeRef.current) {
-                iframeRef.current.src = iframeRef.current.src;
-            }
-        }
-    };
-
     const handleIframeError = () => {
         setHasError(true);
     };
@@ -55,7 +45,7 @@ const Browser = ({ url }) => {
     const iconStyle = {
         width: '16px',
         height: '16px',
-        imageRendering: 'pixelated',
+        imageRendering: 'pixelated' as any,
         display: 'block'
     };
 
@@ -70,18 +60,10 @@ const Browser = ({ url }) => {
                 gap: '5px'
             }}>
 
-                {/* reload button disabled because i just found out that it you refresh a page in a "virtual" browser
-                but i might use this in the future idk*/}
-                {/* <button onClick={handleReload} title="Reload" style={{ minWidth: '24px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #000', backgroundColor: '#fff', boxShadow: '1px 1px 0 #000', cursor: 'pointer' }}>
-                    <img src={reloadIcon} alt="Reload" style={iconStyle} />
-                </button> */}
-
-                {/* home button */}
                 <button onClick={handleHome} title="Home" style={{ minWidth: '24px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #000', backgroundColor: '#fff', boxShadow: '1px 1px 0 #000', cursor: 'pointer' }}>
                     <img src={homeIcon} alt="Home" style={iconStyle} />
                 </button>
 
-                {/* open external button */}
                 <button onClick={handleOpenExternal} title="Open in New Tab" style={{ minWidth: '24px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #000', backgroundColor: '#fff', boxShadow: '1px 1px 0 #000', cursor: 'pointer' }}>
                     <img src={openURLIcon} alt="Open External" style={iconStyle} />
                 </button>
@@ -110,7 +92,8 @@ const Browser = ({ url }) => {
                         justifyContent: 'center',
                         padding: '40px',
                         fontFamily: 'Chicago, sans-serif',
-                        textAlign: 'center'
+                        textAlign: 'center',
+                        imageRendering: 'pixelated' as any,
                     }}>
                         <div style={{
                             padding: '20px',
@@ -156,7 +139,8 @@ const Browser = ({ url }) => {
                             border: 'none',
                             backgroundColor: 'white',
                             transform: `scale(${scale})`,
-                            transformOrigin: 'top left'
+                            transformOrigin: 'top left',
+                            imageRendering: 'pixelated' as any
                         }}
                         title="Browser"
                     />

@@ -1,7 +1,20 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, ReactNode, CSSProperties, MouseEvent } from 'react';
 import { playSound } from '../../utils/soundManager';
 
-const Window = ({ title, children, onClose, isOpen, style, isActive, onFocus, onPositionChange, onSizeChange, noPadding }) => {
+interface WindowProps {
+    title: string;
+    children: ReactNode;
+    onClose: () => void;
+    isOpen: boolean;
+    style?: CSSProperties;
+    isActive: boolean;
+    onFocus: () => void;
+    onPositionChange?: (pos: { x: number; y: number }) => void;
+    onSizeChange?: (size: { width: number; height: number }) => void;
+    noPadding?: boolean;
+}
+
+const Window = ({ title, children, onClose, isOpen, style, isActive, onFocus, onPositionChange, onSizeChange, noPadding }: WindowProps) => {
     const [isShaded, setIsShaded] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
     const [isResizing, setIsResizing] = useState(false);
@@ -11,7 +24,7 @@ const Window = ({ title, children, onClose, isOpen, style, isActive, onFocus, on
     const dragDimensions = useRef({ width: 0, height: 0 });
     const resizeStart = useRef({ width: 0, height: 0, mouseX: 0, mouseY: 0 });
 
-    const handleMouseDown = (e) => {
+    const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
         if (e.button !== 0) return;
         onFocus();
         setIsDragging(true);
@@ -31,23 +44,23 @@ const Window = ({ title, children, onClose, isOpen, style, isActive, onFocus, on
         };
     };
 
-    const handleResizeMouseDown = (e) => {
+    const handleResizeMouseDown = (e: MouseEvent<HTMLButtonElement>) => {
         if (e.button !== 0) return;
         e.stopPropagation();
         onFocus();
         setIsResizing(true);
         resizeStart.current = {
-            width: style.width ? parseInt(style.width) : 300,
-            height: style.height ? parseInt(style.height) : 200,
+            width: style?.width ? (typeof style.width === 'number' ? style.width : parseInt(style.width as string)) : 300,
+            height: style?.height ? (typeof style.height === 'number' ? style.height : parseInt(style.height as string)) : 200,
             mouseX: e.clientX,
             mouseY: e.clientY
         };
     };
 
     useEffect(() => {
-        const handleMouseMove = (e) => {
+        const handleMouseMove = (e: globalThis.MouseEvent) => {
             if (isDragging && onPositionChange) {
-                // prevent accidental clicks by waiting for threshold
+                // drag threshold
                 const deltaX = Math.abs(e.clientX - dragStartPos.current.x);
                 const deltaY = Math.abs(e.clientY - dragStartPos.current.y);
 
@@ -112,36 +125,47 @@ const Window = ({ title, children, onClose, isOpen, style, isActive, onFocus, on
         prevIsOpen.current = isOpen;
     }, [isOpen]);
 
-    const windowPaneRef = useRef(null);
-    const scrollingRef = useRef(false);
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+    let scrollTimeout: NodeJS.Timeout | undefined;
 
-    useEffect(() => {
-        const windowPane = windowPaneRef.current;
-        if (!windowPane) return;
+    const lastScrollSoundTime = useRef(0);
 
-        let scrollTimeout;
-        const handleScroll = () => {
-            if (!isActive) return;
+    const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+        const target = e.target as HTMLDivElement;
+        const isScrollable = target.scrollHeight > target.clientHeight;
 
-            if (!scrollingRef.current) {
+        if (isScrollable) {
+            target.classList.add('scrolling');
+
+            const now = Date.now();
+            if (now - lastScrollSoundTime.current > 150) {
                 playSound('sbth');
-                scrollingRef.current = true;
+                lastScrollSoundTime.current = now;
             }
 
-            clearTimeout(scrollTimeout);
+            if (scrollTimeout) {
+                clearTimeout(scrollTimeout);
+            }
+
             scrollTimeout = setTimeout(() => {
-                scrollingRef.current = false;
-            }, 200);
-        };
+                target.classList.remove('scrolling');
+            }, 1000);
+        }
+    };
 
-        windowPane.addEventListener('scroll', handleScroll, { passive: true });
-        return () => {
-            windowPane.removeEventListener('scroll', handleScroll);
-            clearTimeout(scrollTimeout);
-            scrollingRef.current = false;
-        };
-    }, [isActive, isOpen]);
-
+    useEffect(() => {
+        const container = scrollContainerRef.current;
+        if (container) {
+            // Add non-passive touch listener to prevent body scroll
+            const preventDefault = (e: Event) => {
+                e.stopPropagation();
+            };
+            container.addEventListener('touchmove', preventDefault, { passive: false });
+            return () => {
+                container.removeEventListener('touchmove', preventDefault);
+            };
+        }
+    }, []);
     if (!isOpen) return null;
 
     return (
@@ -151,7 +175,7 @@ const Window = ({ title, children, onClose, isOpen, style, isActive, onFocus, on
                 position: 'absolute',
                 zIndex: isActive ? 10 : 1,
                 ...style,
-                height: isShaded ? 'auto' : style.height,
+                height: isShaded ? 'auto' : (style?.height ?? 'auto'),
                 display: 'flex',
                 flexDirection: 'column'
             }}
@@ -172,8 +196,9 @@ const Window = ({ title, children, onClose, isOpen, style, isActive, onFocus, on
             </div>
             <div className="separator"></div>
             <div
-                ref={windowPaneRef}
+                ref={scrollContainerRef}
                 className="window-pane"
+                onScroll={handleScroll}
                 style={{
                     ...(noPadding ? { padding: 0 } : {}),
                     userSelect: 'none',

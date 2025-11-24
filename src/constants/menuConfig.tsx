@@ -1,14 +1,16 @@
-import React from 'react';
+
 import appleLogo from '@sakun/system.css/icon/apple.svg';
 
-export const getMenus = (onOpenWindow, activeMenu) => ({
+export const getMenus = (onOpenWindow: (id: string) => void, activeMenu: string | null, onCrash?: () => void) => ({
     apple: {
         label: <img src={appleLogo} alt="Apple" style={{
-            height: '23px', paddingBottom: '2px',
+            height: '22px', width: 'auto', paddingBottom: '2px',
             filter: activeMenu === 'apple' ? 'invert(100%)' : 'none'
         }} />,
         items: [
-            { label: 'About This Mac', action: () => onOpenWindow('aboutThisMac') }
+            { label: 'About This Mac', action: () => onOpenWindow('aboutThisMac') },
+            { type: 'separator' },
+            { label: 'Test System Error', action: onCrash }
         ]
     },
     file: {

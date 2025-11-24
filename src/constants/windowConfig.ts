@@ -1,4 +1,16 @@
-export const INITIAL_WINDOWS = {
+export interface WindowState {
+    isOpen: boolean;
+    isActive: boolean;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    videoId?: string | null;
+    url?: string;
+    title?: string;
+}
+
+export const INITIAL_WINDOWS: Record<string, WindowState> = {
     about: { isOpen: true, isActive: true, x: 40, y: 100, width: 500, height: 472 },
     projects: { isOpen: true, isActive: false, x: 550, y: 70, width: 650, height: 700 },
     aboutThisMac: { isOpen: false, isActive: false, x: 200, y: 120, width: 575, height: 215 },

@@ -14,38 +14,23 @@ import DoomManual from '../../content/DoomManual';
 
 import ErrorBoundary from '../ErrorBoundary';
 import { WINDOW_Z } from '../../constants/designTokens';
-import fileIcon from '../../assets/fileicon.svg';
-import folderIcon from '../../assets/folder.svg';
-import globeIcon from '../../assets/Global.svg';
-import leocodesIcon from '../../assets/leocodes_logo_bw_big.svg';
+import { INITIAL_WINDOWS, WindowState } from '../../constants/windowConfig';
+import { INITIAL_ICONS, IconState } from '../../constants/iconConfig';
 
 const Desktop = () => {
-    const INITIAL_WINDOWS = {
-        about: { isOpen: true, isActive: true, x: 40, y: 100, width: 500, height: 472 },
-        projects: { isOpen: true, isActive: false, x: 550, y: 70, width: 650, height: 700 },
-        aboutThisMac: { isOpen: false, isActive: false, x: 200, y: 120, width: 575, height: 215 },
-        video: { isOpen: false, isActive: false, x: 300, y: 200, width: 640, height: 480, videoId: null, title: 'Video Player' },
-        browser: { isOpen: false, isActive: false, x: 50, y: 50, width: 1280, height: 720, url: '', title: 'Web Browser' },
-        contactMe: { isOpen: false, isActive: false, x: 320, y: 50, width: 800, height: 620 },
-        games: { isOpen: false, isActive: false, x: 750, y: 100, width: 600, height: 500 },
-        doom: { isOpen: false, isActive: false, x: 100, y: 50, width: 1280, height: 720 },
-        doomManual: { isOpen: false, isActive: false, x: 200, y: 150, width: 900, height: 600 }
-    };
+    const [windows, setWindows] = useState<Record<string, WindowState>>(INITIAL_WINDOWS);
 
-    const [windows, setWindows] = useState(INITIAL_WINDOWS);
-
-    // icon positions
-    const [icons, setIcons] = useState([
-        { id: 'about', label: 'About Me', x: 0, y: 220, windowKey: 'about', iconSrc: fileIcon },
-        { id: 'linkedin', label: 'Linkedin', x: 0, y: 50, iconSrc: globeIcon },
-        { id: 'github', label: 'Github', x: 0, y: 120, iconSrc: leocodesIcon },
-        { id: 'projects', label: 'Projects', x: 0, y: 300, windowKey: 'projects', iconSrc: fileIcon },
-        { id: 'contactMe', label: 'Contact Me', x: 200, y: 150, windowKey: 'contactMe', iconSrc: fileIcon },
-        { id: 'games', label: 'Games', x: 0, y: 380, windowKey: 'games', iconSrc: folderIcon },
-    ]);
+    const [icons, setIcons] = useState<IconState[]>(INITIAL_ICONS);
 
 
-    const [selectedIconId, setSelectedIconId] = useState(null);
+    const [selectedIconId, setSelectedIconId] = useState<string | null>(null);
+    const [simulateCrash, setSimulateCrash] = useState(false);
+
+    if (simulateCrash) {
+        // simulate a real runtime error (TypeError)
+        const crash: any = null;
+        crash.toString();
+    }
 
     useEffect(() => {
         setIcons(prev => prev.map(icon => ({
@@ -56,7 +41,7 @@ const Desktop = () => {
         })));
     }, []);
 
-    const openWindow = (key) => {
+    const openWindow = (key: string) => {
         setWindows(prev => {
             const newWindows = { ...prev };
             Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
@@ -65,7 +50,7 @@ const Desktop = () => {
         });
     };
 
-    const openVideo = (videoId, title) => {
+    const openVideo = (videoId: string, title?: string) => {
         setWindows(prev => {
             const newWindows = { ...prev };
             Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
@@ -80,7 +65,7 @@ const Desktop = () => {
         });
     };
 
-    const openBrowser = (url, title) => {
+    const openBrowser = (url: string, title?: string) => {
         setWindows(prev => {
             const newWindows = { ...prev };
             Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
@@ -121,14 +106,14 @@ const Desktop = () => {
         });
     };
 
-    const closeWindow = (key) => {
+    const closeWindow = (key: string) => {
         setWindows(prev => ({
             ...prev,
             [key]: { ...prev[key], isOpen: false }
         }));
     };
 
-    const focusWindow = (key) => {
+    const focusWindow = (key: string) => {
         setWindows(prev => {
             const newWindows = { ...prev };
             Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
@@ -137,36 +122,36 @@ const Desktop = () => {
         });
     };
 
-    const updateWindowPosition = (key, { x, y }) => {
+    const updateWindowPosition = (key: string, { x, y }: { x: number; y: number }) => {
         setWindows(prev => ({
             ...prev,
             [key]: { ...prev[key], x, y }
         }));
     };
 
-    const updateWindowSize = (key, { width, height }) => {
+    const updateWindowSize = (key: string, { width, height }: { width: number; height: number }) => {
         setWindows(prev => ({
             ...prev,
             [key]: { ...prev[key], width, height }
         }));
     };
 
-    const handleIconClick = (id, e) => {
-        e.stopPropagation();
-        setSelectedIconId(id);
-    };
+    // const handleIconClick = (id: string, e: React.MouseEvent) => {
+    //     e.stopPropagation();
+    //     setSelectedIconId(id);
+    // };
 
-    const handleBackgroundClick = () => {
-        setSelectedIconId(null);
-    };
+    // const handleBackgroundClick = () => {
+    //     setSelectedIconId(null);
+    // };
 
-    const handleIconDrag = (id, { x, y }) => {
+    const handleIconDrag = (id: string, { x, y }: { x: number; y: number }) => {
         setIcons(prev => prev.map(icon =>
             icon.id === id ? { ...icon, x, y } : icon
         ));
     };
 
-    const handleIconDoubleClick = (icon) => {
+    const handleIconDoubleClick = (icon: IconState) => {
         switch (icon.id) {
             case 'linkedin':
                 window.open('https://www.linkedin.com/in/leonardo-napoles/', '_blank');
@@ -177,7 +162,9 @@ const Desktop = () => {
                 break;
 
             default:
-                openWindow(icon.windowKey);
+                if (icon.windowKey) {
+                    openWindow(icon.windowKey);
+                }
                 break;
         }
     };
@@ -196,7 +183,7 @@ const Desktop = () => {
                 overflow: 'hidden'
             }}
         >
-            <MenuBar onOpenWindow={openWindow} />
+            <MenuBar onOpenWindow={openWindow} onCrash={() => setSimulateCrash(true)} />
             <div style={{ paddingTop: '30px', height: 'calc(100% - 30px)', position: 'relative' }}>
 
                 {icons.map(icon => (
@@ -260,7 +247,7 @@ const Desktop = () => {
 
                 <ErrorBoundary key={`video-boundary-${windows.video.isOpen}`}>
                     <Window
-                        title={windows.video.title}
+                        title={windows.video.title || 'Video Player'}
                         isOpen={windows.video.isOpen}
                         isActive={windows.video.isActive}
                         onClose={() => closeWindow('video')}
@@ -282,7 +269,7 @@ const Desktop = () => {
 
                 <ErrorBoundary key={`browser-boundary-${windows.browser.isOpen}`}>
                     <Window
-                        title={windows.browser.title}
+                        title={windows.browser.title || 'Web Browser'}
                         isOpen={windows.browser.isOpen}
                         isActive={windows.browser.isActive}
                         onClose={() => closeWindow('browser')}

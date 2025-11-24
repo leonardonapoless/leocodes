@@ -12,11 +12,11 @@ import sbar from '../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/sbar.mp3';
 import sbth from '../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/sbth.mp3';
 import sbtp from '../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/sbtp.mp3';
 
-const soundFiles = {
+const soundFiles: Record<string, string> = {
     wopn, wcls, mnuo, mnuc, mnui, btnp, btnr, fsel, flap, sbap, sbar, sbth, sbtp
 };
 
-const soundVolumes = {
+const soundVolumes: Record<string, number> = {
     wopn: 0.2,
     wcls: 0.2,
     mnuo: 0.2,
@@ -32,12 +32,11 @@ const soundVolumes = {
     sbtp: 0.15,
 };
 
-const audioCache = {}
+const audioCache: Record<string, HTMLAudioElement> = {}
 
-const getAudio = (name) => {
+const getAudio = (name: string) => {
     if (audioCache[name]) return audioCache[name]
 
-    // fallback if worker hasn't finished
     if (soundFiles[name]) {
         audioCache[name] = new Audio(soundFiles[name])
     }
@@ -45,16 +44,15 @@ const getAudio = (name) => {
     return audioCache[name]
 }
 
-export const playSound = (name) => {
+export const playSound = (name: string) => {
     try {
         const base = getAudio(name)
         if (!base) return
 
-        const audio = base.cloneNode()
+        const audio = base.cloneNode() as HTMLAudioElement
         audio.volume = soundVolumes[name] ?? 0.3
 
         audio.play().catch(() => {
-            // ignore autoplay blocks
         })
     } catch (err) {
         console.error('play error:', name, err)
@@ -70,7 +68,7 @@ export const preloadSounds = () => {
         return
     }
 
-    const worker = new Worker(new URL('./audioWorker.js', import.meta.url), { type: 'module' })
+    const worker = new Worker(new URL('./audioWorker.ts', import.meta.url), { type: 'module' })
 
     worker.onmessage = ({ data }) => {
         const { key, blob } = data

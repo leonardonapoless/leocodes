@@ -2,7 +2,12 @@ import Icon from '../components/ui/Icon';
 import doomIcon from '../assets/Doom-1-icon.png';
 import fileIcon from '../assets/fileicon.svg';
 
-const Games = ({ onOpenDoom, onOpenManual }) => {
+interface GamesProps {
+    onOpenDoom: () => void;
+    onOpenManual: () => void;
+}
+
+const Games = ({ onOpenDoom, onOpenManual }: GamesProps) => {
     return (
         <div style={{
             position: 'relative',

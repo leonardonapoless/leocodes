@@ -83,7 +83,7 @@ const MenuBar = ({ onOpenWindow, onCrash }: MenuBarProps) => {
                 color: activeMenu === key ? '#fff' : '#000'
               }}
             >
-              <span style={{ fontSize: key === 'apple' ? '1.2rem' : '1rem', lineHeight: '1', display: 'flex', alignItems: 'center' }}>
+              <span style={{ lineHeight: '1', display: 'flex', alignItems: 'center' }}>
                 {menu.label}
               </span>
             </div>
@@ -147,7 +147,7 @@ const MenuBar = ({ onOpenWindow, onCrash }: MenuBarProps) => {
           </div>
         ))}
       </div>
-      <div style={{ cursor: 'default', paddingRight: '10px', fontSize: '16px', fontWeight: 'bold' }}>
+      <div style={{ cursor: 'default', paddingRight: '10px', fontSize: '1.2rem', fontWeight: 'bold' }}>
         {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
       </div>
     </div>

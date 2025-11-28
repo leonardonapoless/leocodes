@@ -18,16 +18,6 @@ Pretty much everything you see.
 - System.css (for the retro vibes)
 - EmailJS (for the contact form)
 
-## Running it locally
-If you want to poke around the code:
-
-```bash
-git clone https://github.com/leonardonapoless/leocodes.git
-cd leocodes
-npm install
-npm run dev
-```
-
 ## Credits
 - **Design**: Myself, and Apple (obviously)
 - **CSS**: [System.css](https://github.com/sakofchit/system.css)

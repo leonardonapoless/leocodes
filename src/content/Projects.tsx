@@ -14,10 +14,12 @@ interface Project {
     description: string;
     githubLink: string;
     demoLink: string;
+    videoSize?: { width: number; height: number };
+    videoPosition?: { x: number; y: number };
 }
 
 interface ProjectsProps {
-    onOpenVideo?: (videoId: string, title: string) => void;
+    onOpenVideo?: (videoId: string, title: string, width?: number, height?: number, x?: number, y?: number) => void;
     onOpenBrowser?: (url: string, title: string) => void;
 }
 
@@ -28,7 +30,9 @@ const Projects = ({ onOpenVideo, onOpenBrowser }: ProjectsProps) => {
             technologies: ['Swift'],
             description: 'A fast, no-frills way to search a song and open it on Apple Music, Spotify, TIDAL, or YouTube. Flip the artwork to see the nerdy bits, then get back to the music.',
             githubLink: 'https://github.com/leonardonapoless/PAMS',
-            demoLink: 'https://youtu.be/d1w29lK44IM'
+            demoLink: 'https://youtu.be/d1w29lK44IM',
+            videoSize: { width: 1020, height: 700 },
+            videoPosition: { x: 100, y: 50 }
         },
         {
             id: 2, name: 'TicTak',
@@ -87,7 +91,7 @@ const Projects = ({ onOpenVideo, onOpenBrowser }: ProjectsProps) => {
             const videoId = extractYouTubeVideoId(project.demoLink);
 
             if (videoId && onOpenVideo) {
-                onOpenVideo(videoId, project.name);
+                onOpenVideo(videoId, project.name, project.videoSize?.width, project.videoSize?.height, project.videoPosition?.x, project.videoPosition?.y);
             } else {
                 window.open(project.demoLink, '_blank');
             }

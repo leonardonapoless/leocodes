@@ -39,7 +39,9 @@ const Projects = ({ onOpenVideo, onOpenBrowser }: ProjectsProps) => {
             technologies: ['Swift'],
             description: 'A simple tictactoe iOS app made in Swift and SwiftUI using the MVVM architecture.',
             githubLink: 'https://github.com/leonardonapoless/tictak',
-            demoLink: 'https://youtube.com/shorts/sFOXO_k8Tg8?si=RTLpRh8eiyk4DQ09'
+            demoLink: 'https://youtube.com/shorts/sFOXO_k8Tg8?si=RTLpRh8eiyk4DQ09',
+            videoSize: { width: 550, height: 700 },
+            videoPosition: { x: 500, y: 50 }
         },
     ];
 

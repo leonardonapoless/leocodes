@@ -75,6 +75,14 @@ const VideoPlayer = ({ videoId }: VideoPlayerProps) => {
         return () => clearInterval(interval);
     }, [isPlaying]);
 
+    useEffect(() => {
+        return () => {
+            if (controlsTimeoutRef.current) {
+                clearTimeout(controlsTimeoutRef.current);
+            }
+        };
+    }, []);
+
     const onPlayerReady = (event: any) => {
         setIsReady(true);
         setDuration(event.target.getDuration());
@@ -124,17 +132,27 @@ const VideoPlayer = ({ videoId }: VideoPlayerProps) => {
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     };
 
+    const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
     return (
         <div
             style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', background: '#000', position: 'relative' }}
             onMouseEnter={() => {
+                if (controlsTimeoutRef.current) {
+                    clearTimeout(controlsTimeoutRef.current);
+                    controlsTimeoutRef.current = null;
+                }
                 const controls = document.querySelector('.video-controls') as HTMLElement;
                 if (controls) controls.style.opacity = '1';
             }}
             onMouseLeave={() => {
                 if (isPlaying) {
                     const controls = document.querySelector('.video-controls') as HTMLElement;
-                    if (controls) controls.style.opacity = '0';
+                    if (controls) {
+                        controlsTimeoutRef.current = setTimeout(() => {
+                            controls.style.opacity = '0';
+                        }, 1200);
+                    }
                 }
             }}
         >
@@ -161,7 +179,7 @@ const VideoPlayer = ({ videoId }: VideoPlayerProps) => {
                 left: 0,
                 right: 0,
                 height: '40px',
-                backgroundColor: 'rgba(192, 192, 192, 0.8)',
+                backgroundColor: '#f6f5ecff',
                 borderTop: '2px solid #dfdfdf',
                 display: 'flex',
                 alignItems: 'center',
@@ -170,7 +188,7 @@ const VideoPlayer = ({ videoId }: VideoPlayerProps) => {
                 fontFamily: 'Chicago, sans-serif',
                 fontSize: '12px',
                 zIndex: 10,
-                transition: 'opacity 0.3s ease',
+                transition: 'opacity 0.2s ease',
                 opacity: isPlaying ? 0 : 1,
                 flexWrap: 'wrap'
             }}

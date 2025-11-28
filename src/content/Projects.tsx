@@ -28,7 +28,7 @@ const Projects = ({ onOpenVideo, onOpenBrowser }: ProjectsProps) => {
             technologies: ['Swift'],
             description: 'A fast, no-frills way to search a song and open it on Apple Music, Spotify, TIDAL, or YouTube. Flip the artwork to see the nerdy bits, then get back to the music.',
             githubLink: 'https://github.com/leonardonapoless/PAMS',
-            demoLink: ''
+            demoLink: 'https://youtu.be/d1w29lK44IM'
         },
         {
             id: 2, name: 'TicTak',

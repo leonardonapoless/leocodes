@@ -50,7 +50,7 @@ const Desktop = () => {
         });
     };
 
-    const openVideo = (videoId: string, title?: string) => {
+    const openVideo = (videoId: string, title?: string, width?: number, height?: number, x?: number, y?: number) => {
         setWindows(prev => {
             const newWindows = { ...prev };
             Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
@@ -59,7 +59,11 @@ const Desktop = () => {
                 isOpen: true,
                 isActive: true,
                 videoId,
-                title: title || 'Video Player'
+                title: title || 'Video Player',
+                width: width || newWindows.video.width,
+                height: height || newWindows.video.height,
+                x: x || newWindows.video.x,
+                y: y || newWindows.video.y
             };
             return newWindows;
         });

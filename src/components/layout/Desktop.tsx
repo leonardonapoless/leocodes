@@ -84,6 +84,21 @@ const Desktop = () => {
         });
     };
 
+    const openImage = (imageUrl: string, title?: string) => {
+        setWindows(prev => {
+            const newWindows = { ...prev };
+            Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
+            newWindows.imageViewer = {
+                ...newWindows.imageViewer,
+                isOpen: true,
+                isActive: true,
+                imageUrl,
+                title: title || 'Image Viewer'
+            };
+            return newWindows;
+        });
+    };
+
     const openDoom = () => {
         setWindows(prev => {
             const newWindows = { ...prev };
@@ -230,7 +245,7 @@ const Desktop = () => {
                         onSizeChange={(size) => updateWindowSize('projects', size)}
                         style={{ top: windows.projects.y, left: windows.projects.x, width: windows.projects.width, height: windows.projects.height }}
                     >
-                        <Projects onOpenVideo={openVideo} onOpenBrowser={openBrowser} />
+                        <Projects onOpenVideo={openVideo} onOpenBrowser={openBrowser} onOpenImage={openImage} />
                     </Window>
                 </ErrorBoundary>
 
@@ -290,6 +305,35 @@ const Desktop = () => {
                         }}
                     >
                         {windows.browser.url && <Browser url={windows.browser.url} />}
+                    </Window>
+                </ErrorBoundary>
+
+                <ErrorBoundary key={`imageViewer-boundary-${windows.imageViewer.isOpen}`}>
+                    <Window
+                        title={windows.imageViewer.title || 'Image Viewer'}
+                        isOpen={windows.imageViewer.isOpen}
+                        isActive={windows.imageViewer.isActive}
+                        onClose={() => closeWindow('imageViewer')}
+                        onFocus={() => focusWindow('imageViewer')}
+                        onPositionChange={(pos) => updateWindowPosition('imageViewer', pos)}
+                        onSizeChange={(size) => updateWindowSize('imageViewer', size)}
+                        style={{
+                            top: windows.imageViewer.y,
+                            left: windows.imageViewer.x,
+                            width: windows.imageViewer.width,
+                            height: windows.imageViewer.height,
+                            zIndex: windows.imageViewer.isActive ? WINDOW_Z.media : 15
+                        }}
+                    >
+                        {windows.imageViewer.imageUrl && (
+                            <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#000' }}>
+                                <img
+                                    src={windows.imageViewer.imageUrl}
+                                    alt={windows.imageViewer.title}
+                                    style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+                                />
+                            </div>
+                        )}
                     </Window>
                 </ErrorBoundary>
 

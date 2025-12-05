@@ -8,6 +8,7 @@ export interface WindowState {
     videoId?: string | null;
     url?: string;
     title?: string;
+    imageUrl?: string;
 }
 
 export const INITIAL_WINDOWS: Record<string, WindowState> = {
@@ -19,5 +20,6 @@ export const INITIAL_WINDOWS: Record<string, WindowState> = {
     contactMe: { isOpen: false, isActive: false, x: 320, y: 50, width: 800, height: 620 },
     games: { isOpen: false, isActive: false, x: 750, y: 100, width: 600, height: 500 },
     doom: { isOpen: false, isActive: false, x: 100, y: 50, width: 1280, height: 720 },
-    doomManual: { isOpen: false, isActive: false, x: 200, y: 150, width: 900, height: 600 }
+    doomManual: { isOpen: false, isActive: false, x: 200, y: 150, width: 900, height: 600 },
+    imageViewer: { isOpen: false, isActive: false, x: 150, y: 150, width: 800, height: 600, imageUrl: '', title: 'Image Viewer' }
 };

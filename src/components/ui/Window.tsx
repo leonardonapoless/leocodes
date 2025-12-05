@@ -217,21 +217,23 @@ const Window = ({ title, children, onClose, isOpen, style, isActive, onFocus, on
                 onMouseDown={handleResizeMouseDown}
                 style={{
                     position: 'absolute',
-                    bottom: '2px',
-                    right: '2px',
+                    bottom: '0px',
+                    right: '0px',
                     cursor: 'nwse-resize',
-                    width: '15px',
-                    height: '15px',
+                    width: '16px',
+                    height: '16px',
                     background: 'none',
                     border: 'none',
-                    zIndex: 20
+                    zIndex: 20,
+                    padding: 0,
+                    display: 'flex',
+                    alignItems: 'flex-end',
+                    justifyContent: 'flex-end'
                 }}
             >
-                <svg width="100%" height="100%" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M15 15L0 15L15 0Z" fill="#808080" fillOpacity="0.5" />
-                    <line x1="3" y1="15" x2="15" y2="3" stroke="black" strokeWidth="1" />
-                    <line x1="7" y1="15" x2="15" y2="7" stroke="black" strokeWidth="1" />
-                    <line x1="11" y1="15" x2="15" y2="11" stroke="black" strokeWidth="1" />
+                <svg width="100" height="24" viewBox="4 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="12" y="12" width="12" height="12" fill="#b3b3baff" stroke="#4a4a4a" strokeWidth="1.5" />
+                    <rect x="6" y="6" width="12" height="12" stroke="#4a4a4a" strokeWidth="1.5" fill="#c0c0d0" />
                 </svg>
             </button>
         </div>

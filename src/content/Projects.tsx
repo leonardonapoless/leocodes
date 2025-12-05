@@ -10,6 +10,7 @@ import cppIcon from '../assets/cppIcon.svg';
 import juceIcon from '../assets/juceIcon.png';
 import metalIcon from '../assets/metalIcon.png';
 import openglIcon from '../assets/openglIcon.png';
+import typescriptIcon from '../assets/typescriptIcon.png';
 import trebleMakerImage from '../assets/treblemaker_demo.png';
 
 interface Project {
@@ -55,7 +56,7 @@ const Projects = ({ onOpenVideo, onOpenBrowser, onOpenImage }: ProjectsProps) =>
     const otherProjects: Project[] = [
         {
             id: 3, name: 'TrebleMaker',
-            technologies: ['cpp', 'JUCE', 'Metal', 'OpenGL'],
+            technologies: ['C++', 'JUCE', 'Metal', 'OpenGL'],
             description: 'A simple high-shelf filter plugin built with JUCE.',
             githubLink: 'https://github.com/leonardonapoless/treblemaker',
             demoLink: '',
@@ -77,7 +78,7 @@ const Projects = ({ onOpenVideo, onOpenBrowser, onOpenImage }: ProjectsProps) =>
         },
         {
             id: 6, name: 'LeoCodes - Portfolio',
-            technologies: ['HTML', 'CSS', 'JavaScript', 'React', 'Vite'],
+            technologies: ['HTML', 'CSS', 'TypeScript', 'React', 'Vite'],
             description: 'My personal Classic Mac OS style portfolio website built with React and Vite.',
             githubLink: 'https://github.com/leonardonapoless/leocodes',
             demoLink: 'https://leocodes.vercel.app'
@@ -126,14 +127,17 @@ const Projects = ({ onOpenVideo, onOpenBrowser, onOpenImage }: ProjectsProps) =>
         'Java': { src: javaIcon, filter: 'none' },
         'Java Swing': { src: javaIcon, filter: 'none' },
         'JavaScript': { src: javascriptIcon },
+        'TypeScript': { src: typescriptIcon, style: { height: '26px' } },
         'HTML': { src: htmlIcon },
         'CSS': { src: cssIcon },
         'React': { src: reactIcon, filter: 'brightness(0) saturate(100%)' },
         'Vite': { src: viteIcon },
-        'cpp': { src: cppIcon, filter: 'none', style: { height: '26px' } },
+        'C++': { src: cppIcon, filter: 'none', style: { height: '26px' } },
         'JUCE': { src: juceIcon, filter: 'none', style: { height: '25px' } },
         'Metal': { src: metalIcon, filter: 'none', style: { height: '28px' } },
-        'OpenGL': { src: openglIcon, filter: 'none', style: { height: '45px' } }
+        'OpenGL': {
+            src: openglIcon, filter: 'none', style: { height: '50px', paddingTop: '2px' }
+        }
     };
 
     const renderProjectList = (projects: Project[], openByDefault = true) => (

@@ -56,8 +56,8 @@ const Projects = ({ onOpenVideo, onOpenBrowser, onOpenImage }: ProjectsProps) =>
     const otherProjects: Project[] = [
         {
             id: 3, name: 'TrebleMaker',
-            technologies: ['C++', 'JUCE', 'Metal', 'OpenGL'],
-            description: 'A simple high-shelf filter plugin built with JUCE.',
+            technologies: ['C++', 'JUCE'],
+            description: 'A simple high-shelf filter plugin built with JUCE and C++.',
             githubLink: 'https://github.com/leonardonapoless/treblemaker',
             demoLink: '',
             demoImage: trebleMakerImage

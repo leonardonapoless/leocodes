@@ -34,7 +34,7 @@ Pretty much everything you see.
   </tr>
   <tr>
     <td width="150px"><strong>Files</strong></td>
-    <td>The icons actually do things. "About Me" opens a window, "Projects" shows my work.</td>
+    <td>The icons are functional and open actual windows. "About Me" covers the lore and "Projects" showcases the code.</td>
   </tr>
   <tr>
     <td width="150px"><strong>Sound</strong></td>

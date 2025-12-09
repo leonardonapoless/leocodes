@@ -64,7 +64,7 @@ Pretty much everything you see.
 If you want to poke around the code:
 
 ```bash
-git clone [https://github.com/leonardonapoless/leocodes.git](https://github.com/leonardonapoless/leocodes.git)
+git clone https://github.com/leonardonapoless/leocodes.git
 cd leocodes
 npm install
 npm run dev

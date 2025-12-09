@@ -2,6 +2,8 @@
 
 Welcome to my portfolio. It's a website, but it thinks it's a Macintosh from 1997.
 
+<img width="3530" height="2442" alt="leocodesimg" src="https://github.com/user-attachments/assets/9f6d4e47-c065-4d69-83bf-27a72b2f178d" />
+
 I built this because I miss the days when computers made satisfying clicking sounds and didn't track your every move. It's built with **React**, but styled to look like System 6/7 using the awesome `System.css` library.
 
 ## What works?

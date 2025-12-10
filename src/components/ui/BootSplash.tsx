@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import logo from '../../assets/leocodes_logo_bw_big.svg';
 import bootChime from '../../assets/audio/StartupPowerMacPCI.wav';
-import { playSound } from '../../utils/soundManager';
 
 interface BootSplashProps {
     onComplete: () => void;
@@ -73,7 +72,6 @@ const BootSplash = ({ onComplete }: BootSplashProps) => {
                         <button
                             className="btn"
                             onClick={() => {
-                                playSound('btnp');
                                 startBoot();
                             }}
                             style={{

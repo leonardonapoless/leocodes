@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { loadYouTubeApi, YT } from '../../utils/loadYouTubeApi';
 
 interface VideoPlayerProps {
@@ -124,7 +124,7 @@ const VideoPlayer = ({ videoId }: VideoPlayerProps) => {
         setCurrentTime(0);
     };
 
-    const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleVolumeChange = (e: ChangeEvent<HTMLInputElement>) => {
         const newVolume = Number(e.target.value);
         setVolume(newVolume);
         if (playerRef.current) {
@@ -132,7 +132,7 @@ const VideoPlayer = ({ videoId }: VideoPlayerProps) => {
         }
     };
 
-    const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleSeek = (e: ChangeEvent<HTMLInputElement>) => {
         const newTime = parseFloat(e.target.value);
         setCurrentTime(newTime);
         if (playerRef.current) {

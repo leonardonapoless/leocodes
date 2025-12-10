@@ -1,78 +1,89 @@
-import { useEffect, useRef, useState } from 'react';
-
-declare global {
-    interface Window {
-        YT: any;
-        onYouTubeIframeAPIReady: () => void;
-    }
-}
+import React, { useEffect, useRef, useState } from 'react';
+import { loadYouTubeApi, YT } from '../../utils/loadYouTubeApi';
 
 interface VideoPlayerProps {
     videoId: string;
 }
 
 const VideoPlayer = ({ videoId }: VideoPlayerProps) => {
-    const playerRef = useRef<any>(null);
+    const playerRef = useRef<YT.Player | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [volume, setVolume] = useState(50);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
     const [isReady, setIsReady] = useState(false);
+    const animationFrameRef = useRef<number | null>(null);
+    const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
-        if (!window.YT) {
-            const tag = document.createElement('script');
-            tag.src = "https://www.youtube.com/iframe_api";
-            const firstScriptTag = document.getElementsByTagName('script')[0];
-            if (firstScriptTag && firstScriptTag.parentNode) {
-                firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-            }
-        }
+        let isMounted = true;
+        let playerInstance: YT.Player | null = null;
 
-        const initPlayer = () => {
-            playerRef.current = new window.YT.Player(`youtube-player-${videoId}`, {
-                height: '100%',
-                width: '100%',
-                videoId: videoId,
-                playerVars: {
-                    'playsinline': 1,
-                    'controls': 0,
-                    'modestbranding': 0,
-                    'rel': 0,
-                    'iv_load_policy': 3,
-                    'fs': 0,
-                    'disablekb': 0
-                },
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
-                }
-            });
+        const init = async () => {
+            try {
+                const yt = await loadYouTubeApi();
+
+                if (!isMounted) return;
+
+                playerInstance = new yt.Player(`youtube-player-${videoId}`, {
+                    height: '100%',
+                    width: '100%',
+                    videoId: videoId,
+                    playerVars: {
+                        playsinline: 1,
+                        controls: 0,
+                        modestbranding: 1,
+                        rel: 0,
+                        iv_load_policy: 3,
+                        fs: 0,
+                        disablekb: 0
+                    },
+                    events: {
+                        onReady: onPlayerReady,
+                        onStateChange: onPlayerStateChange
+                    }
+                });
+
+                playerRef.current = playerInstance;
+
+            } catch (error) {
+                console.error("Failed to load YouTube API", error);
+            }
         };
 
-        if (window.YT && window.YT.Player) {
-            initPlayer();
-        } else {
-            window.onYouTubeIframeAPIReady = initPlayer;
-        }
+        init();
 
         return () => {
-            if (playerRef.current && playerRef.current.destroy) {
-                playerRef.current.destroy();
+            isMounted = false;
+            if (playerInstance) {
+                playerInstance.destroy();
+                playerRef.current = null;
             }
         };
     }, [videoId]);
 
     useEffect(() => {
-        let interval: NodeJS.Timeout;
+        const updateTime = () => {
+            if (playerRef.current && isPlaying) {
+                const time = playerRef.current.getCurrentTime();
+                setCurrentTime(time);
+                animationFrameRef.current = requestAnimationFrame(updateTime);
+            }
+        };
+
         if (isPlaying) {
-            interval = setInterval(() => {
-                if (playerRef.current && playerRef.current.getCurrentTime) {
-                    setCurrentTime(playerRef.current.getCurrentTime());
-                }
-            }, 1000);
+            animationFrameRef.current = requestAnimationFrame(updateTime);
+        } else {
+            if (animationFrameRef.current) {
+                cancelAnimationFrame(animationFrameRef.current);
+            }
         }
-        return () => clearInterval(interval);
+
+        return () => {
+            if (animationFrameRef.current) {
+                cancelAnimationFrame(animationFrameRef.current);
+            }
+        };
     }, [isPlaying]);
 
     useEffect(() => {
@@ -83,19 +94,22 @@ const VideoPlayer = ({ videoId }: VideoPlayerProps) => {
         };
     }, []);
 
-    const onPlayerReady = (event: any) => {
+    const onPlayerReady = (event: YT.PlayerEvent) => {
         setIsReady(true);
         setDuration(event.target.getDuration());
         event.target.setVolume(volume);
         event.target.playVideo();
     };
 
-    const onPlayerStateChange = (event: any) => {
-        setIsPlaying(event.data === window.YT.PlayerState.PLAYING);
+    const onPlayerStateChange = (event: YT.OnStateChangeEvent) => {
+        setIsPlaying(event.data === 1);
+        if (event.data === 1) {
+            setDuration(event.target.getDuration());
+        }
     };
 
     const togglePlay = () => {
-        if (!isReady) return;
+        if (!isReady || !playerRef.current) return;
         if (isPlaying) {
             playerRef.current.pauseVideo();
         } else {
@@ -104,7 +118,7 @@ const VideoPlayer = ({ videoId }: VideoPlayerProps) => {
     };
 
     const handleStop = () => {
-        if (!isReady) return;
+        if (!isReady || !playerRef.current) return;
         playerRef.current.stopVideo();
         setIsPlaying(false);
         setCurrentTime(0);
@@ -132,8 +146,6 @@ const VideoPlayer = ({ videoId }: VideoPlayerProps) => {
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     };
 
-    const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
     return (
         <div
             style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', background: '#000', position: 'relative' }}
@@ -142,12 +154,12 @@ const VideoPlayer = ({ videoId }: VideoPlayerProps) => {
                     clearTimeout(controlsTimeoutRef.current);
                     controlsTimeoutRef.current = null;
                 }
-                const controls = document.querySelector('.video-controls') as HTMLElement;
+                const controls = document.querySelector(`.video-controls-${videoId}`) as HTMLElement;
                 if (controls) controls.style.opacity = '1';
             }}
             onMouseLeave={() => {
                 if (isPlaying) {
-                    const controls = document.querySelector('.video-controls') as HTMLElement;
+                    const controls = document.querySelector(`.video-controls-${videoId}`) as HTMLElement;
                     if (controls) {
                         controlsTimeoutRef.current = setTimeout(() => {
                             controls.style.opacity = '0';
@@ -192,7 +204,7 @@ const VideoPlayer = ({ videoId }: VideoPlayerProps) => {
                 opacity: isPlaying ? 0 : 1,
                 flexWrap: 'wrap'
             }}
-                className="video-controls"
+                className={`video-controls video-controls-${videoId}`}
             >
                 <button
                     onClick={togglePlay}
@@ -235,7 +247,8 @@ const VideoPlayer = ({ videoId }: VideoPlayerProps) => {
                     <input
                         type="range"
                         min="0"
-                        max={duration}
+                        max={duration || 100}
+                        step="0.1"
                         value={currentTime}
                         onChange={handleSeek}
                         className="video-seek-slider"
@@ -304,7 +317,7 @@ const VideoPlayer = ({ videoId }: VideoPlayerProps) => {
                 }
                 
                 @media (max-width: 500px) {
-                    .video-controls {
+                    .video-controls-${videoId} {
                         height: auto !important;
                         padding: 5px !important;
                     }

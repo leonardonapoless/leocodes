@@ -32,52 +32,43 @@ const soundVolumes: Record<string, number> = {
     sbtp: 0.15,
 };
 
-const audioCache: Record<string, HTMLAudioElement> = {}
+const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+const ctx = new AudioContextClass();
+const soundBuffers: Record<string, AudioBuffer> = {};
 
-const getAudio = (name: string) => {
-    if (audioCache[name]) return audioCache[name]
-
-    if (soundFiles[name]) {
-        audioCache[name] = new Audio(soundFiles[name])
+export const playSound = async (name: string) => {
+    if (ctx.state === 'suspended') {
+        await ctx.resume();
     }
 
-    return audioCache[name]
-}
+    const buffer = soundBuffers[name];
+    if (!buffer) return;
 
-export const playSound = (name: string) => {
-    try {
-        const base = getAudio(name)
-        if (!base) return
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
 
-        const audio = base.cloneNode() as HTMLAudioElement
-        audio.volume = soundVolumes[name] ?? 0.3
+    const gainNode = ctx.createGain();
+    gainNode.gain.value = soundVolumes[name] ?? 0.3;
 
-        audio.play().catch(() => {
-        })
-    } catch (err) {
-        console.error('play error:', name, err)
-    }
-}
+    source.connect(gainNode);
+    gainNode.connect(ctx.destination);
 
-export const preloadSounds = () => {
-    if (!window.Worker) {
-        Object.keys(soundFiles).forEach(key => {
-            const audio = getAudio(key)
-            if (audio) audio.load()
-        })
-        return
-    }
+    source.start(0);
+};
 
-    const worker = new Worker(new URL('./audioWorker.ts', import.meta.url), { type: 'module' })
+export const preloadSounds = async () => {
+    const promises = Object.entries(soundFiles).map(async ([key, url]) => {
+        try {
+            const response = await fetch(url);
+            const arrayBuffer = await response.arrayBuffer();
+            const decodedBuffer = await ctx.decodeAudioData(arrayBuffer);
+            soundBuffers[key] = decodedBuffer;
+        } catch (error) {
+            console.error(`failed to load sound: ${key}`, error);
+        }
+    });
 
-    worker.onmessage = ({ data }) => {
-        const { key, blob } = data
-        const audio = new Audio(URL.createObjectURL(blob))
-        audioCache[key] = audio
-        audio.load()
-    }
+    await Promise.all(promises);
+};
 
-    worker.postMessage(soundFiles)
-}
-
-export default { playSound, preloadSounds }
+export default { playSound, preloadSounds };

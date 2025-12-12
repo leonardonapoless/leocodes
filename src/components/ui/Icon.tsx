@@ -11,9 +11,10 @@ interface IconProps {
     onSelect: (e: React.MouseEvent) => void;
     onDrag?: (pos: { x: number; y: number }) => void;
     size?: number;
+    style?: React.CSSProperties;
 }
 
-const Icon = ({ label, iconSrc, onDoubleClick, x, y, isSelected, onSelect, onDrag, size = 48 }: IconProps) => {
+const Icon = ({ label, iconSrc, onDoubleClick, x, y, isSelected, onSelect, onDrag, size = 48, style }: IconProps) => {
     const [isDragging, setIsDragging] = useState(false);
     const dragOffset = useRef({ x: 0, y: 0 });
 
@@ -22,7 +23,6 @@ const Icon = ({ label, iconSrc, onDoubleClick, x, y, isSelected, onSelect, onDra
     const handleMouseDown = (e: React.MouseEvent) => {
         if (e.button !== 0) return;
 
-        // double click detection
         const currentTime = new Date().getTime();
         const timeDiff = currentTime - lastClickTime.current;
 
@@ -77,7 +77,8 @@ const Icon = ({ label, iconSrc, onDoubleClick, x, y, isSelected, onSelect, onDra
                 alignItems: 'center',
                 width: `${Math.max(80, size + 20)}px`,
                 cursor: 'default',
-                zIndex: isSelected ? 2 : 1
+                zIndex: isSelected ? 2 : 1,
+                ...style
             }}
             onMouseDown={handleMouseDown}
             onDoubleClick={onDoubleClick}

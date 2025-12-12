@@ -1,8 +1,7 @@
-import { SKILLS_LAYOUT } from '../constants/designTokens';
 
 const AboutMe = () => (
     <div>
-        <div style={{ display: 'flex', gap: SKILLS_LAYOUT.headerGap }}>
+        <div className="about-header">
             <p><b>Hi, I'm Leonardo!</b></p>
             <p><i>-iOS Developer</i></p>
         </div>
@@ -10,15 +9,15 @@ const AboutMe = () => (
         <br />
         <fieldset>
             <legend>Skills</legend>
-            <div className="field-row" style={{ display: 'flex', gap: SKILLS_LAYOUT.swiftJavaGap }}>
+            <div className="field-row skill-row-1">
                 <label htmlFor="swift" style={{ fontSize: '22px' }}>Swift</label>
                 <label htmlFor="java" style={{ fontSize: '22px' }}>Java</label>
             </div>
-            <div className="field-row" style={{ display: 'flex', gap: SKILLS_LAYOUT.swiftuiCGap }}>
+            <div className="field-row skill-row-2">
                 <label htmlFor="swiftui" style={{ fontSize: '22px' }}>SwiftUI</label>
                 <label htmlFor="clang" style={{ fontSize: '22px' }}>C</label>
             </div>
-            <div className='field-row' style={{ display: 'flex', gap: SKILLS_LAYOUT.mvvmHtmlGap }}>
+            <div className='field-row skill-row-3'>
                 <label htmlFor='mvvm' style={{ fontSize: '22px' }}>MVVM</label>
                 <label htmlFor='htmlcssjs' style={{ fontSize: '22px' }}>HTML/CSS/JS</label>
             </div>

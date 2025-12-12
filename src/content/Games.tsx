@@ -1,41 +1,71 @@
 import Icon from '../components/ui/Icon';
 import doomIcon from '../assets/Doom-1-icon.png';
 import fileIcon from '../assets/fileicon.svg';
+import snakeIcon from '../assets/snake_icon.png';
 
 interface GamesProps {
     onOpenDoom: () => void;
     onOpenManual: () => void;
+    onOpenSnake?: () => void;
+    isMobile?: boolean;
 }
 
-const Games = ({ onOpenDoom, onOpenManual }: GamesProps) => {
+const Games = ({ onOpenDoom, onOpenManual, onOpenSnake, isMobile }: GamesProps) => {
     return (
         <div style={{
             position: 'relative',
             width: '100%',
-            height: '100%'
+            height: isMobile ? '120px' : '100%'
         }}>
-            <Icon
-                iconSrc={doomIcon}
-                label="Doom"
-                isSelected={false}
-                onSelect={() => { }}
-                onDoubleClick={onOpenDoom}
-                onDrag={() => { }}
-                x={20}
-                y={20}
-                size={80}
-            />
-            <Icon
-                iconSrc={fileIcon}
-                label="Doom Read Me"
-                isSelected={false}
-                onSelect={() => { }}
-                onDoubleClick={onOpenManual}
-                onDrag={() => { }}
-                x={150}
-                y={20}
-                size={80}
-            />
+            {isMobile ? (
+                <Icon
+                    iconSrc={snakeIcon}
+                    label="Snake"
+                    isSelected={false}
+                    onSelect={() => onOpenSnake && onOpenSnake()}
+                    onDoubleClick={() => onOpenSnake && onOpenSnake()}
+                    onDrag={() => { }}
+                    x={20}
+                    y={20}
+                    size={64}
+                />
+            ) : (
+                <>
+                    <Icon
+                        iconSrc={doomIcon}
+                        label="Doom"
+                        isSelected={false}
+                        onSelect={() => { }}
+                        onDoubleClick={onOpenDoom}
+                        onDrag={() => { }}
+                        x={20}
+                        y={20}
+                        size={80}
+                    />
+                    <Icon
+                        iconSrc={fileIcon}
+                        label="Doom Read Me"
+                        isSelected={false}
+                        onSelect={() => { }}
+                        onDoubleClick={onOpenManual}
+                        onDrag={() => { }}
+                        x={150}
+                        y={20}
+                        size={80}
+                    />
+                    <Icon
+                        iconSrc={snakeIcon}
+                        label="Snake"
+                        isSelected={false}
+                        onSelect={() => { }}
+                        onDoubleClick={() => onOpenSnake && onOpenSnake()}
+                        onDrag={() => { }}
+                        x={280}
+                        y={20}
+                        size={80}
+                    />
+                </>
+            )}
         </div>
     );
 };

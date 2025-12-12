@@ -62,7 +62,7 @@ const ContactMe = () => {
 
     return (
         <div style={{ padding: '10px', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', minHeight: '100%' }}>
-            <div style={{ width: '100%', maxWidth: '500px', marginLeft: '30px' }}>
+            <div style={{ width: '100%', maxWidth: '500px' }}>
                 <div style={{ marginBottom: '20px', textAlign: 'center' }}>
                     <h2 style={{ margin: '0 0 10px 0', fontSize: '20px' }}>Get In Touch</h2>
                     <p style={{ margin: 0, fontSize: '14px' }}>

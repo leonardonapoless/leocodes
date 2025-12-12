@@ -14,11 +14,10 @@ const BootSplash = ({ onComplete }: BootSplashProps) => {
 
     useEffect(() => {
         const audio = new Audio(bootChime);
-        audio.volume = 0.6; // reduce volume to 60%
+        audio.volume = 0.6;
         audio.load();
         audioRef.current = audio;
 
-        // simulate early mac boot delay
         const timer = setTimeout(() => {
             setShowContent(true);
         }, 1000);
@@ -36,7 +35,7 @@ const BootSplash = ({ onComplete }: BootSplashProps) => {
         setTimeout(() => {
             setIsVisible(false);
             setTimeout(onComplete, 500);
-        }, 2000); // adjusted to match the chime decay
+        }, 2000);
     };
 
     return (
@@ -60,8 +59,10 @@ const BootSplash = ({ onComplete }: BootSplashProps) => {
                         top: '45%',
                         left: '50%',
                         transform: 'translate(-50%, -50%)',
-                        width: '600px',
-                        height: '600px',
+                        width: '80vw',
+                        height: '80vw',
+                        maxWidth: '600px',
+                        maxHeight: '600px',
                         backgroundImage: `url(${logo})`,
                         backgroundSize: 'contain',
                         backgroundRepeat: 'no-repeat',
@@ -70,7 +71,7 @@ const BootSplash = ({ onComplete }: BootSplashProps) => {
                     }} />
                     {!hasStarted && (
                         <button
-                            className="btn"
+                            className="btn boot-me-up-btn"
                             onClick={() => {
                                 startBoot();
                             }}

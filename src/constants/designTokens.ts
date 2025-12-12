@@ -13,7 +13,6 @@ export const SKILLS_LAYOUT = {
     mvvmHtmlGap: '131px'
 };
 
-// window z-index layers
 export const WINDOW_Z = {
     inactive: 1,
     active: 10,

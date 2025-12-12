@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef, ReactNode, CSSProperties, MouseEvent } from 'react';
+import { useState, useEffect, useRef, ReactNode, CSSProperties, PointerEvent } from 'react';
 import { playSound } from '../../utils/soundManager';
 
 interface WindowProps {
+    id?: string;
     title: string;
     children: ReactNode;
     onClose: () => void;
@@ -12,9 +13,12 @@ interface WindowProps {
     onPositionChange?: (pos: { x: number; y: number }) => void;
     onSizeChange?: (size: { width: number; height: number }) => void;
     noPadding?: boolean;
+    isMobile?: boolean;
+    minWidth?: number;
+    minHeight?: number;
 }
 
-const Window = ({ title, children, onClose, isOpen, style, isActive, onFocus, onPositionChange, onSizeChange, noPadding }: WindowProps) => {
+const Window = ({ id, title, children, onClose, isOpen, style, isActive, onFocus, onPositionChange, onSizeChange, noPadding, isMobile, minWidth = 200, minHeight = 150 }: WindowProps) => {
     const [isShaded, setIsShaded] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
     const [isResizing, setIsResizing] = useState(false);
@@ -24,9 +28,11 @@ const Window = ({ title, children, onClose, isOpen, style, isActive, onFocus, on
     const dragDimensions = useRef({ width: 0, height: 0 });
     const resizeStart = useRef({ width: 0, height: 0, mouseX: 0, mouseY: 0 });
 
-    const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
+    const handlePointerDown = (e: PointerEvent<HTMLDivElement>) => {
+        if (isMobile) return;
         if (e.button !== 0) return;
         onFocus();
+        e.currentTarget.setPointerCapture(e.pointerId);
         setIsDragging(true);
         dragStarted.current = false;
         const rect = e.currentTarget.getBoundingClientRect();
@@ -44,9 +50,11 @@ const Window = ({ title, children, onClose, isOpen, style, isActive, onFocus, on
         };
     };
 
-    const handleResizeMouseDown = (e: MouseEvent<HTMLButtonElement>) => {
+    const handleResizePointerDown = (e: PointerEvent<HTMLButtonElement>) => {
+        if (isMobile) return;
         if (e.button !== 0) return;
         e.stopPropagation();
+        e.currentTarget.setPointerCapture(e.pointerId);
         onFocus();
         setIsResizing(true);
         resizeStart.current = {
@@ -58,9 +66,8 @@ const Window = ({ title, children, onClose, isOpen, style, isActive, onFocus, on
     };
 
     useEffect(() => {
-        const handleMouseMove = (e: globalThis.MouseEvent) => {
+        const handlePointerMove = (e: globalThis.PointerEvent) => {
             if (isDragging && onPositionChange) {
-                // drag threshold
                 const deltaX = Math.abs(e.clientX - dragStartPos.current.x);
                 const deltaY = Math.abs(e.clientY - dragStartPos.current.y);
 
@@ -91,8 +98,8 @@ const Window = ({ title, children, onClose, isOpen, style, isActive, onFocus, on
             if (isResizing && onSizeChange) {
                 const deltaX = e.clientX - resizeStart.current.mouseX;
                 const deltaY = e.clientY - resizeStart.current.mouseY;
-                const newWidth = Math.max(200, resizeStart.current.width + deltaX);
-                const newHeight = Math.max(150, resizeStart.current.height + deltaY);
+                const newWidth = Math.max(minWidth, resizeStart.current.width + deltaX);
+                const newHeight = Math.max(minHeight, resizeStart.current.height + deltaY);
                 onSizeChange({
                     width: newWidth,
                     height: newHeight
@@ -100,20 +107,20 @@ const Window = ({ title, children, onClose, isOpen, style, isActive, onFocus, on
             }
         };
 
-        const handleMouseUp = () => {
+        const handlePointerUp = () => {
             setIsDragging(false);
             dragStarted.current = false;
             setIsResizing(false);
         };
 
         if (isDragging || isResizing) {
-            document.addEventListener('mousemove', handleMouseMove);
-            document.addEventListener('mouseup', handleMouseUp);
+            document.addEventListener('pointermove', handlePointerMove);
+            document.addEventListener('pointerup', handlePointerUp);
         }
 
         return () => {
-            document.removeEventListener('mousemove', handleMouseMove);
-            document.removeEventListener('mouseup', handleMouseUp);
+            document.removeEventListener('pointermove', handlePointerMove);
+            document.removeEventListener('pointerup', handlePointerUp);
         };
     }, [isDragging, isResizing, onPositionChange, onSizeChange]);
 
@@ -156,7 +163,6 @@ const Window = ({ title, children, onClose, isOpen, style, isActive, onFocus, on
     useEffect(() => {
         const container = scrollContainerRef.current;
         if (container) {
-            // Add non-passive touch listener to prevent body scroll
             const preventDefault = (e: Event) => {
                 e.stopPropagation();
             };
@@ -168,8 +174,44 @@ const Window = ({ title, children, onClose, isOpen, style, isActive, onFocus, on
     }, []);
     if (!isOpen) return null;
 
+    const titleRef = useRef<HTMLHeadingElement>(null);
+    const [titleFontSize, setTitleFontSize] = useState<number | undefined>(undefined);
+
+    useEffect(() => {
+        if (!isMobile || !isOpen || !titleRef.current) {
+            setTitleFontSize(undefined);
+            return;
+        }
+
+        const adjustTitleSize = () => {
+            const element = titleRef.current;
+            if (!element) return;
+
+            element.style.fontSize = '';
+
+            const availableWidth = element.offsetWidth;
+            const fullWidth = element.scrollWidth;
+
+            if (fullWidth > availableWidth) {
+                const computedStyle = window.getComputedStyle(element);
+                const currentFontSize = parseFloat(computedStyle.fontSize) || 16;
+
+                const ratio = availableWidth / fullWidth;
+                const newSize = Math.max(9, Math.floor(currentFontSize * ratio));
+
+                setTitleFontSize(newSize);
+            } else {
+                setTitleFontSize(undefined);
+            }
+        };
+
+        const timer = setTimeout(adjustTitleSize, 0);
+        return () => clearTimeout(timer);
+    }, [title, isMobile, isOpen]);
+
     return (
         <div
+            id={id}
             className={`window ${isActive ? 'active' : ''} `}
             style={{
                 position: 'absolute',
@@ -183,16 +225,38 @@ const Window = ({ title, children, onClose, isOpen, style, isActive, onFocus, on
         >
             <div
                 className="title-bar"
-                onMouseDown={handleMouseDown}
-                onDoubleClick={() => setIsShaded(!isShaded)}
+                onPointerDown={handlePointerDown}
+                onDoubleClick={() => !isMobile && setIsShaded(!isShaded)}
                 style={{ cursor: 'default', userSelect: 'none', WebkitUserSelect: 'none', position: 'relative' }}
             >
-                <button aria-label="Close" className="close" onMouseDown={(e) => e.stopPropagation()} onClick={(e) => {
-                    e.stopPropagation();
-                    playSound('wcls');
-                    onClose();
-                }}></button>
-                <h1 className="title" style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', margin: 0 }}>{title}</h1>
+                <button
+                    aria-label="Close"
+                    className="close"
+                    style={{ position: 'relative', zIndex: 20 }}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        playSound('wcls');
+                        onClose();
+                    }}
+                />
+                <h1
+                    ref={titleRef}
+                    className="title"
+                    style={{
+                        position: 'absolute',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        margin: 0,
+                        whiteSpace: 'nowrap',
+                        maxWidth: isMobile ? 'calc(100% - 90px)' : '100%',
+                        fontSize: titleFontSize ? `${titleFontSize}px` : undefined,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                    }}
+                >
+                    {title}
+                </h1>
             </div>
             <div className="separator"></div>
             <div
@@ -214,7 +278,7 @@ const Window = ({ title, children, onClose, isOpen, style, isActive, onFocus, on
             <button
                 aria-label="Resize"
                 className="resize"
-                onMouseDown={handleResizeMouseDown}
+                onPointerDown={handleResizePointerDown}
                 style={{
                     position: 'absolute',
                     bottom: '0px',

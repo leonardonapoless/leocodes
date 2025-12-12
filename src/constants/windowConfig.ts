@@ -9,6 +9,8 @@ export interface WindowState {
     url?: string;
     title?: string;
     imageUrl?: string;
+    minWidth?: number;
+    minHeight?: number;
 }
 
 export const INITIAL_WINDOWS: Record<string, WindowState> = {
@@ -21,5 +23,6 @@ export const INITIAL_WINDOWS: Record<string, WindowState> = {
     games: { isOpen: false, isActive: false, x: 750, y: 100, width: 600, height: 500 },
     doom: { isOpen: false, isActive: false, x: 100, y: 50, width: 1280, height: 720 },
     doomManual: { isOpen: false, isActive: false, x: 200, y: 150, width: 900, height: 600 },
-    imageViewer: { isOpen: false, isActive: false, x: 150, y: 150, width: 800, height: 600, imageUrl: '', title: 'Image Viewer' }
+    imageViewer: { isOpen: false, isActive: false, x: 150, y: 150, width: 800, height: 600, imageUrl: '', title: 'Image Viewer' },
+    snake: { isOpen: false, isActive: false, x: 400, y: 100, width: 420, height: 650, minWidth: 420, minHeight: 650, title: 'Snake' }
 };

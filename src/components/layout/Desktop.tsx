@@ -11,6 +11,8 @@ import ContactMe from '../../content/ContactMe';
 import Games from '../../content/Games';
 import Doom from '../../content/Doom';
 import DoomManual from '../../content/DoomManual';
+import Snake from '../../content/Snake';
+import MobileNavButton from '../ui/MobileNavButton';
 
 import ErrorBoundary from '../ErrorBoundary';
 import { WINDOW_Z } from '../../constants/designTokens';
@@ -21,25 +23,46 @@ const Desktop = () => {
     const [windows, setWindows] = useState<Record<string, WindowState>>(INITIAL_WINDOWS);
 
     const [icons, setIcons] = useState<IconState[]>(INITIAL_ICONS);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+    useEffect(() => {
+        const handleResize = () => {
+            const width = window.innerWidth;
+            const mobile = width <= 768;
+            setIsMobile(mobile);
+
+            if (!mobile) {
+                setIcons(INITIAL_ICONS.map(icon => {
+                    let xOffset = 90;
+                    if (icon.id === 'contactMe') {
+                        xOffset = 190;
+                    }
+
+                    return {
+                        ...icon,
+                        x: width - xOffset
+                    };
+                }));
+            } else {
+                setIcons(INITIAL_ICONS);
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        handleResize();
+
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
 
     const [selectedIconId, setSelectedIconId] = useState<string | null>(null);
     const [simulateCrash, setSimulateCrash] = useState(false);
 
     if (simulateCrash) {
-        // simulate a real runtime error (TypeError)
         const crash: any = null;
         crash.toString();
     }
 
-    useEffect(() => {
-        setIcons(prev => prev.map(icon => ({
-            ...icon,
-            x: icon.id === 'contactMe'
-                ? window.innerWidth - 200
-                : window.innerWidth - 100
-        })));
-    }, []);
 
     const openWindow = (key: string) => {
         setWindows(prev => {
@@ -125,6 +148,19 @@ const Desktop = () => {
         });
     };
 
+    const openSnake = () => {
+        setWindows(prev => {
+            const newWindows = { ...prev };
+            Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
+            newWindows.snake = {
+                ...newWindows.snake,
+                isOpen: true,
+                isActive: true
+            };
+            return newWindows;
+        });
+    };
+
     const closeWindow = (key: string) => {
         setWindows(prev => ({
             ...prev,
@@ -155,14 +191,6 @@ const Desktop = () => {
         }));
     };
 
-    // const handleIconClick = (id: string, e: React.MouseEvent) => {
-    //     e.stopPropagation();
-    //     setSelectedIconId(id);
-    // };
-
-    // const handleBackgroundClick = () => {
-    //     setSelectedIconId(null);
-    // };
 
     const handleIconDrag = (id: string, { x, y }: { x: number; y: number }) => {
         setIcons(prev => prev.map(icon =>
@@ -190,22 +218,54 @@ const Desktop = () => {
 
     return (
         <div
+            className="desktop-container"
             onClick={() => setSelectedIconId(null)}
             style={{
                 width: '100vw',
                 height: '100vh',
                 backgroundColor: '#408080',
-                // classic mac os tiled pattern
                 backgroundImage: 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==")',
                 backgroundSize: '4px 4px',
                 position: 'relative',
-                overflow: 'hidden'
+                overflow: isMobile ? 'auto' : 'hidden',
+                WebkitOverflowScrolling: 'touch'
             }}
         >
             <MenuBar onOpenWindow={openWindow} onCrash={() => setSimulateCrash(true)} />
-            <div style={{ paddingTop: '30px', height: 'calc(100% - 30px)', position: 'relative' }}>
+            <div className={isMobile ? "mobile-layout" : ""} style={{ paddingTop: '30px', height: isMobile ? 'auto' : 'calc(100% - 30px)', position: 'relative', minHeight: 'calc(100vh - 30px)' }}>
 
-                {icons.map(icon => (
+                {isMobile && (
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(4, 1fr)',
+                        gap: '15px',
+                        padding: '20px 10px',
+                        width: '100%',
+                        boxSizing: 'border-box',
+                        justifyItems: 'center'
+                    }}>
+                        {icons.map(icon => (
+                            <div key={icon.id} style={{ position: 'relative', width: 'auto', height: 'auto' }}>
+                                <Icon
+                                    {...icon}
+                                    x={0} y={0}
+                                    style={{ position: 'relative', top: 'auto', left: 'auto', transform: 'none', margin: 0 }}
+                                    isSelected={selectedIconId === icon.id}
+                                    onSelect={(e) => {
+                                        e.stopPropagation();
+                                        setSelectedIconId(icon.id);
+                                        handleIconDoubleClick(icon);
+                                    }}
+                                    onDoubleClick={() => handleIconDoubleClick(icon)}
+                                    onDrag={() => { }}
+                                    size={42}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {!isMobile && icons.map(icon => (
                     <Icon
                         key={icon.id}
                         {...icon}
@@ -221,6 +281,7 @@ const Desktop = () => {
 
                 <ErrorBoundary key={`about-boundary-${windows.about.isOpen}`}>
                     <Window
+                        id="window-about"
                         title="About Me"
                         isOpen={windows.about.isOpen}
                         isActive={windows.about.isActive}
@@ -229,6 +290,7 @@ const Desktop = () => {
                         onPositionChange={(pos) => updateWindowPosition('about', pos)}
                         onSizeChange={(size) => updateWindowSize('about', size)}
                         style={{ top: windows.about.y, left: windows.about.x, width: windows.about.width, height: windows.about.height }}
+                        isMobile={isMobile}
                     >
                         <AboutMe />
                     </Window>
@@ -236,6 +298,7 @@ const Desktop = () => {
 
                 <ErrorBoundary key={`projects-boundary-${windows.projects.isOpen}`}>
                     <Window
+                        id="window-projects"
                         title="Projects"
                         isOpen={windows.projects.isOpen}
                         isActive={windows.projects.isActive}
@@ -244,6 +307,7 @@ const Desktop = () => {
                         onPositionChange={(pos) => updateWindowPosition('projects', pos)}
                         onSizeChange={(size) => updateWindowSize('projects', size)}
                         style={{ top: windows.projects.y, left: windows.projects.x, width: windows.projects.width, height: windows.projects.height }}
+                        isMobile={isMobile}
                     >
                         <Projects onOpenVideo={openVideo} onOpenBrowser={openBrowser} onOpenImage={openImage} />
                     </Window>
@@ -251,6 +315,7 @@ const Desktop = () => {
 
                 <ErrorBoundary key={`aboutThisMac-boundary-${windows.aboutThisMac.isOpen}`}>
                     <Window
+                        id="window-aboutThisMac"
                         title="About This Macintosh"
                         isOpen={windows.aboutThisMac.isOpen}
                         isActive={windows.aboutThisMac.isActive}
@@ -259,6 +324,7 @@ const Desktop = () => {
                         onPositionChange={(pos) => updateWindowPosition('aboutThisMac', pos)}
                         onSizeChange={(size) => updateWindowSize('aboutThisMac', size)}
                         style={{ top: windows.aboutThisMac.y, left: windows.aboutThisMac.x, width: windows.aboutThisMac.width, height: windows.aboutThisMac.height }}
+                        isMobile={isMobile}
                     >
                         <AboutThisMac />
                     </Window>
@@ -266,6 +332,7 @@ const Desktop = () => {
 
                 <ErrorBoundary key={`video-boundary-${windows.video.isOpen}`}>
                     <Window
+                        id="window-video"
                         title={windows.video.title || 'Video Player'}
                         isOpen={windows.video.isOpen}
                         isActive={windows.video.isActive}
@@ -281,13 +348,15 @@ const Desktop = () => {
                             height: windows.video.height,
                             zIndex: windows.video.isActive ? WINDOW_Z.media : 15
                         }}
+                        isMobile={isMobile}
                     >
-                        {windows.video.videoId && <VideoPlayer videoId={windows.video.videoId} />}
+                        {windows.video.videoId && <VideoPlayer key={`${windows.video.videoId}-${isMobile}`} videoId={windows.video.videoId} isMobile={isMobile} />}
                     </Window>
                 </ErrorBoundary>
 
                 <ErrorBoundary key={`browser-boundary-${windows.browser.isOpen}`}>
                     <Window
+                        id="window-browser"
                         title={windows.browser.title || 'Web Browser'}
                         isOpen={windows.browser.isOpen}
                         isActive={windows.browser.isActive}
@@ -303,6 +372,7 @@ const Desktop = () => {
                             height: windows.browser.height,
                             zIndex: windows.browser.isActive ? WINDOW_Z.media : 15
                         }}
+                        isMobile={isMobile}
                     >
                         {windows.browser.url && <Browser url={windows.browser.url} />}
                     </Window>
@@ -310,6 +380,7 @@ const Desktop = () => {
 
                 <ErrorBoundary key={`imageViewer-boundary-${windows.imageViewer.isOpen}`}>
                     <Window
+                        id="window-imageViewer"
                         title={windows.imageViewer.title || 'Image Viewer'}
                         isOpen={windows.imageViewer.isOpen}
                         isActive={windows.imageViewer.isActive}
@@ -324,6 +395,7 @@ const Desktop = () => {
                             height: windows.imageViewer.height,
                             zIndex: windows.imageViewer.isActive ? WINDOW_Z.media : 15
                         }}
+                        isMobile={isMobile}
                     >
                         {windows.imageViewer.imageUrl && (
                             <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#000' }}>
@@ -339,6 +411,7 @@ const Desktop = () => {
 
                 <ErrorBoundary key={`contactMe-boundary-${windows.contactMe.isOpen}`}>
                     <Window
+                        id="window-contactMe"
                         title="Contact Me"
                         isOpen={windows.contactMe.isOpen}
                         isActive={windows.contactMe.isActive}
@@ -347,6 +420,7 @@ const Desktop = () => {
                         onPositionChange={(pos) => updateWindowPosition('contactMe', pos)}
                         onSizeChange={(size) => updateWindowSize('contactMe', size)}
                         style={{ top: windows.contactMe.y, left: windows.contactMe.x, width: windows.contactMe.width, height: windows.contactMe.height }}
+                        isMobile={isMobile}
                     >
                         <ContactMe />
                     </Window>
@@ -354,6 +428,7 @@ const Desktop = () => {
 
                 <ErrorBoundary key={`games-boundary-${windows.games.isOpen}`}>
                     <Window
+                        id="window-games"
                         title="Games"
                         isOpen={windows.games.isOpen}
                         isActive={windows.games.isActive}
@@ -362,13 +437,15 @@ const Desktop = () => {
                         onPositionChange={(pos) => updateWindowPosition('games', pos)}
                         onSizeChange={(size) => updateWindowSize('games', size)}
                         style={{ top: windows.games.y, left: windows.games.x, width: windows.games.width, height: windows.games.height }}
+                        isMobile={isMobile}
                     >
-                        <Games onOpenDoom={openDoom} onOpenManual={openDoomManual} />
+                        <Games onOpenDoom={openDoom} onOpenManual={openDoomManual} onOpenSnake={openSnake} isMobile={isMobile} />
                     </Window>
                 </ErrorBoundary>
 
                 <ErrorBoundary key={`doom-boundary-${windows.doom.isOpen}`}>
                     <Window
+                        id="window-doom"
                         title="Doom"
                         isOpen={windows.doom.isOpen}
                         isActive={windows.doom.isActive}
@@ -384,6 +461,7 @@ const Desktop = () => {
                             height: windows.doom.height,
                             zIndex: windows.doom.isActive ? WINDOW_Z.media : 15
                         }}
+                        isMobile={isMobile}
                     >
                         <Doom />
                     </Window>
@@ -391,6 +469,7 @@ const Desktop = () => {
 
                 <ErrorBoundary key={`doomManual-boundary-${windows.doomManual.isOpen}`}>
                     <Window
+                        id="window-doomManual"
                         title="Doom Read Me"
                         isOpen={windows.doomManual.isOpen}
                         isActive={windows.doomManual.isActive}
@@ -405,15 +484,45 @@ const Desktop = () => {
                             height: windows.doomManual.height,
                             zIndex: windows.doomManual.isActive ? WINDOW_Z.media : 15
                         }}
+                        isMobile={isMobile}
                     >
                         <DoomManual />
                     </Window>
                 </ErrorBoundary>
 
+                <ErrorBoundary key={`snake-boundary-${windows.snake.isOpen}`}>
+                    <Window
+                        id="window-snake"
+                        title="Snake"
+                        isOpen={windows.snake.isOpen}
+                        isActive={windows.snake.isActive}
+                        onClose={() => closeWindow('snake')}
+                        onFocus={() => focusWindow('snake')}
+                        onPositionChange={(pos) => updateWindowPosition('snake', pos)}
+                        onSizeChange={(size) => updateWindowSize('snake', size)}
+                        noPadding={true}
+                        minWidth={windows.snake.minWidth}
+                        minHeight={windows.snake.minHeight}
+                        style={{
+                            top: windows.snake.y,
+                            left: windows.snake.x,
+                            width: windows.snake.width,
+                            height: windows.snake.height,
+                            zIndex: windows.snake.isActive ? WINDOW_Z.media : 15
+                        }}
+                        isMobile={isMobile}
+                    >
+                        <Snake />
+                    </Window>
+                </ErrorBoundary>
 
-
-            </div >
-        </div >
+                {isMobile && (() => {
+                    const activeWindowEntry = Object.entries(windows).find(([key, w]) => w.isOpen && w.isActive && key !== 'about' && key !== 'projects');
+                    const targetId = activeWindowEntry ? `window-${activeWindowEntry[0]}` : null;
+                    return <MobileNavButton targetId={targetId} />;
+                })()}
+            </div>
+        </div>
     );
 };
 

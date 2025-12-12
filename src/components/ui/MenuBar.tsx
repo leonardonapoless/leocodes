@@ -30,7 +30,30 @@ const MenuBar = ({ onOpenWindow, onCrash }: MenuBarProps) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const menus = getMenus(onOpenWindow, activeMenu, onCrash);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const allMenus = getMenus(onOpenWindow, activeMenu, onCrash);
+  const menus = isMobile
+    ? {
+      apple: allMenus.apple,
+      leocodes: {
+        label: 'LeoCodes',
+        items: [
+          { label: 'About Me', action: () => onOpenWindow('about') },
+          { label: 'Projects', action: () => onOpenWindow('projects') },
+          { label: 'Contact Me', action: () => onOpenWindow('contactMe') },
+          { type: 'separator' },
+          { label: 'Restart', action: () => window.location.reload() }
+        ]
+      }
+    }
+    : allMenus;
 
   return (
     <div
@@ -45,7 +68,7 @@ const MenuBar = ({ onOpenWindow, onCrash }: MenuBarProps) => {
         borderTop: '2px solid #000',
         borderTopLeftRadius: '16px',
         borderTopRightRadius: '16px',
-        boxShadow: '0 -14px 0 0 #000', // fill uncovered top area with black
+        boxShadow: '0 -14px 0 0 #000',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',

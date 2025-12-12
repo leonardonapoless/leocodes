@@ -3,9 +3,10 @@ import { loadYouTubeApi, YT } from '../../utils/loadYouTubeApi';
 
 interface VideoPlayerProps {
     videoId: string;
+    isMobile?: boolean;
 }
 
-const VideoPlayer = ({ videoId }: VideoPlayerProps) => {
+const VideoPlayer = ({ videoId, isMobile = false }: VideoPlayerProps) => {
     const playerRef = useRef<YT.Player | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [volume, setVolume] = useState(50);
@@ -31,11 +32,11 @@ const VideoPlayer = ({ videoId }: VideoPlayerProps) => {
                     videoId: videoId,
                     playerVars: {
                         playsinline: 1,
-                        controls: 0,
+                        controls: isMobile ? 1 : 0,
                         modestbranding: 1,
                         rel: 0,
                         iv_load_policy: 3,
-                        fs: 0,
+                        fs: isMobile ? 1 : 0,
                         disablekb: 0
                     },
                     events: {
@@ -60,7 +61,7 @@ const VideoPlayer = ({ videoId }: VideoPlayerProps) => {
                 playerRef.current = null;
             }
         };
-    }, [videoId]);
+    }, [videoId, isMobile]);
 
     useEffect(() => {
         const updateTime = () => {
@@ -98,7 +99,8 @@ const VideoPlayer = ({ videoId }: VideoPlayerProps) => {
         setIsReady(true);
         setDuration(event.target.getDuration());
         event.target.setVolume(volume);
-        event.target.playVideo();
+        // Only auto-play if permitted (some mobile browsers block it, but we can try)
+        // event.target.playVideo(); 
     };
 
     const onPlayerStateChange = (event: YT.OnStateChangeEvent) => {
@@ -148,8 +150,17 @@ const VideoPlayer = ({ videoId }: VideoPlayerProps) => {
 
     return (
         <div
-            style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', background: '#000', position: 'relative' }}
+            style={{
+                display: 'flex',
+                flexDirection: 'column',
+                height: isMobile ? 'auto' : '100%',
+                width: '100%',
+                background: '#000',
+                position: 'relative',
+                aspectRatio: isMobile ? '16/9' : 'auto'
+            }}
             onMouseEnter={() => {
+                if (isMobile) return;
                 if (controlsTimeoutRef.current) {
                     clearTimeout(controlsTimeoutRef.current);
                     controlsTimeoutRef.current = null;
@@ -158,6 +169,7 @@ const VideoPlayer = ({ videoId }: VideoPlayerProps) => {
                 if (controls) controls.style.opacity = '1';
             }}
             onMouseLeave={() => {
+                if (isMobile) return;
                 if (isPlaying) {
                     const controls = document.querySelector(`.video-controls-${videoId}`) as HTMLElement;
                     if (controls) {
@@ -168,128 +180,132 @@ const VideoPlayer = ({ videoId }: VideoPlayerProps) => {
                 }
             }}
         >
-            <div style={{ flex: 1, position: 'relative', overflow: 'hidden', width: '100%' }}>
-                <div id={`youtube-player-${videoId}`} style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}></div>
-                <div
-                    onClick={togglePlay}
-                    style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: '100%',
-                        background: 'transparent',
-                        cursor: 'pointer',
-                        zIndex: 5
-                    }}
-                ></div>
-            </div>
-
-            <div style={{
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                right: 0,
-                height: '40px',
-                backgroundColor: '#f6f5ecff',
-                borderTop: '2px solid #dfdfdf',
-                display: 'flex',
-                alignItems: 'center',
-                padding: '0 10px',
-                gap: '8px',
-                fontFamily: 'Chicago, sans-serif',
-                fontSize: '12px',
-                zIndex: 10,
-                transition: 'opacity 0.2s ease',
-                opacity: isPlaying ? 0 : 1,
-                flexWrap: 'wrap'
-            }}
-                className={`video-controls video-controls-${videoId}`}
-            >
-                <button
-                    onClick={togglePlay}
-                    style={{
-                        minWidth: '50px',
-                        height: '24px',
-                        border: '2px solid',
-                        borderColor: '#dfdfdf #404040 #404040 #dfdfdf',
-                        backgroundColor: '#c0c0c0',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        whiteSpace: 'nowrap'
-                    }}
-                >
-                    {isPlaying ? 'Pause' : 'Play'}
-                </button>
-
-                <button
-                    onClick={handleStop}
-                    style={{
-                        minWidth: '50px',
-                        height: '24px',
-                        border: '2px solid',
-                        borderColor: '#dfdfdf #404040 #404040 #dfdfdf',
-                        backgroundColor: '#c0c0c0',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        whiteSpace: 'nowrap'
-                    }}
-                >
-                    Stop
-                </button>
-
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '5px', minWidth: '150px' }}>
-                    <span style={{ minWidth: '35px', fontSize: '11px' }}>{formatTime(currentTime)}</span>
-                    <input
-                        type="range"
-                        min="0"
-                        max={duration || 100}
-                        step="0.1"
-                        value={currentTime}
-                        onChange={handleSeek}
-                        className="video-seek-slider"
+            <div style={{ flex: 1, position: 'relative', overflow: 'hidden', width: '100%', pointerEvents: isMobile ? 'auto' : 'inherit' }}>
+                <div id={`youtube-player-${videoId}`} style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, zIndex: 1 }}></div>
+                {!isMobile && (
+                    <div
+                        onClick={togglePlay}
                         style={{
-                            flex: 1,
-                            height: '12px',
-                            WebkitAppearance: 'none',
-                            appearance: 'none',
-                            background: '#4a4a4a',
-                            outline: 'none',
-                            border: '1px solid #2a2a2a',
-                            borderRadius: '0',
-                            cursor: 'pointer'
-                        }}
-                    />
-                    <span style={{ minWidth: '35px', fontSize: '11px' }}>{formatTime(duration)}</span>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '5px', minWidth: '80px' }}>
-                    <span style={{ fontSize: '11px' }}>Vol</span>
-                    <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        value={volume}
-                        onChange={handleVolumeChange}
-                        className="video-volume-slider"
-                        style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
                             width: '100%',
-                            height: '12px',
-                            WebkitAppearance: 'none',
-                            appearance: 'none',
-                            background: '#4a4a4a',
-                            outline: 'none',
-                            border: '1px solid #2a2a2a',
-                            borderRadius: '0',
-                            cursor: 'pointer'
+                            height: '100%',
+                            background: 'transparent',
+                            cursor: 'pointer',
+                            zIndex: 5
                         }}
-                    />
-                </div>
+                    ></div>
+                )}
             </div>
+
+            {!isMobile && (
+                <div style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: '40px',
+                    backgroundColor: '#f6f5ecff',
+                    borderTop: '2px solid #dfdfdf',
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '0 10px',
+                    gap: '8px',
+                    fontFamily: 'Chicago, sans-serif',
+                    fontSize: '12px',
+                    zIndex: 10,
+                    transition: 'opacity 0.2s ease',
+                    opacity: isPlaying ? 0 : 1,
+                    flexWrap: 'wrap'
+                }}
+                    className={`video-controls video-controls-${videoId}`}
+                >
+                    <button
+                        onClick={togglePlay}
+                        style={{
+                            minWidth: '50px',
+                            height: '24px',
+                            border: '2px solid',
+                            borderColor: '#dfdfdf #404040 #404040 #dfdfdf',
+                            backgroundColor: '#c0c0c0',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            whiteSpace: 'nowrap'
+                        }}
+                    >
+                        {isPlaying ? 'Pause' : 'Play'}
+                    </button>
+
+                    <button
+                        onClick={handleStop}
+                        style={{
+                            minWidth: '50px',
+                            height: '24px',
+                            border: '2px solid',
+                            borderColor: '#dfdfdf #404040 #404040 #dfdfdf',
+                            backgroundColor: '#c0c0c0',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            whiteSpace: 'nowrap'
+                        }}
+                    >
+                        Stop
+                    </button>
+
+                    <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '5px', minWidth: '150px' }}>
+                        <span style={{ minWidth: '35px', fontSize: '11px' }}>{formatTime(currentTime)}</span>
+                        <input
+                            type="range"
+                            min="0"
+                            max={duration || 100}
+                            step="0.1"
+                            value={currentTime}
+                            onChange={handleSeek}
+                            className="video-seek-slider"
+                            style={{
+                                flex: 1,
+                                height: '12px',
+                                WebkitAppearance: 'none',
+                                appearance: 'none',
+                                background: '#4a4a4a',
+                                outline: 'none',
+                                border: '1px solid #2a2a2a',
+                                borderRadius: '0',
+                                cursor: 'pointer'
+                            }}
+                        />
+                        <span style={{ minWidth: '35px', fontSize: '11px' }}>{formatTime(duration)}</span>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', minWidth: '80px' }}>
+                        <span style={{ fontSize: '11px' }}>Vol</span>
+                        <input
+                            type="range"
+                            min="0"
+                            max="100"
+                            value={volume}
+                            onChange={handleVolumeChange}
+                            className="video-volume-slider"
+                            style={{
+                                width: '100%',
+                                height: '12px',
+                                WebkitAppearance: 'none',
+                                appearance: 'none',
+                                background: '#4a4a4a',
+                                outline: 'none',
+                                border: '1px solid #2a2a2a',
+                                borderRadius: '0',
+                                cursor: 'pointer'
+                            }}
+                        />
+                    </div>
+                </div>
+            )}
 
             <style>{`
                 .video-seek-slider::-webkit-slider-thumb,

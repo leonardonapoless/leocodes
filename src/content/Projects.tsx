@@ -161,6 +161,7 @@ const Projects = ({ onOpenVideo, onOpenBrowser, onOpenImage }: ProjectsProps) =>
                                                         src={config.src}
                                                         alt={tech}
                                                         title={tech}
+                                                        className="tech-icon"
                                                         style={{
                                                             width: 'auto',
                                                             height: '20px',

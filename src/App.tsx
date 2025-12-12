@@ -15,9 +15,6 @@ const App = () => {
   return (
     <div className="app-container">
       {showSplash && <BootSplash onComplete={() => setShowSplash(false)} />}
-      <div className="mobile-warning">
-        <p>Please view this website on a desktop computer.</p>
-      </div>
       <ErrorBoundary>
         <Desktop />
       </ErrorBoundary>

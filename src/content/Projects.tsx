@@ -1,5 +1,6 @@
 import React from 'react';
-import swiftIcon from '../assets/swift.svg';
+import swiftIcon from '../assets/swift-96x96_2x.png';
+import swiftuiIcon from '../assets/swiftui-96x96_2x.png';
 import javaIcon from '../assets/java.svg';
 import javascriptIcon from '../assets/javascript.svg';
 import htmlIcon from '../assets/html.svg';
@@ -35,7 +36,7 @@ const Projects = ({ onOpenVideo, onOpenBrowser, onOpenImage }: ProjectsProps) =>
     const iosProjects: Project[] = [
         {
             id: 1, name: 'PAMS (Platform Agnostic Music Search)',
-            technologies: ['Swift'],
+            technologies: ['Swift', 'SwiftUI'],
             description: 'A fast, no-frills way to search a song and open it on Apple Music, Spotify, TIDAL, or YouTube. Flip the artwork to see the nerdy bits, then get back to the music.',
             githubLink: 'https://github.com/leonardonapoless/PAMS',
             demoLink: 'https://youtu.be/d1w29lK44IM',
@@ -44,7 +45,7 @@ const Projects = ({ onOpenVideo, onOpenBrowser, onOpenImage }: ProjectsProps) =>
         },
         {
             id: 2, name: 'TicTak',
-            technologies: ['Swift'],
+            technologies: ['Swift', 'SwiftUI'],
             description: 'A simple tictactoe iOS app made in Swift and SwiftUI using the MVVM architecture.',
             githubLink: 'https://github.com/leonardonapoless/tictak',
             demoLink: 'https://youtube.com/shorts/sFOXO_k8Tg8?si=RTLpRh8eiyk4DQ09',
@@ -122,8 +123,8 @@ const Projects = ({ onOpenVideo, onOpenBrowser, onOpenImage }: ProjectsProps) =>
     };
 
     const techConfig: Record<string, { src: string, style?: React.CSSProperties, filter?: string }> = {
-        'Swift': { src: swiftIcon, filter: 'none', style: { height: '20px' } },
-        'SwiftUI': { src: swiftIcon, filter: 'none' },
+        'Swift': { src: swiftIcon, filter: 'none', style: { height: '27px' } },
+        'SwiftUI': { src: swiftuiIcon, filter: 'none', style: { height: '27px' } },
         'Java': { src: javaIcon, filter: 'none' },
         'Java Swing': { src: javaIcon, filter: 'none' },
         'JavaScript': { src: javascriptIcon },
@@ -164,10 +165,10 @@ const Projects = ({ onOpenVideo, onOpenBrowser, onOpenImage }: ProjectsProps) =>
                                                         className="tech-icon"
                                                         style={{
                                                             width: 'auto',
-                                                            height: '20px',
+                                                            height: '25px',
                                                             verticalAlign: 'middle',
-                                                            paddingBottom: '4px',
-                                                            marginLeft: index === 0 ? '0' : '8px',
+                                                            paddingBottom: '5px',
+                                                            marginLeft: index === 0 ? '0' : '3px',
                                                             filter: config.filter || 'grayscale(100%) contrast(2) brightness(0.8)',
                                                             ...config.style
                                                         }}

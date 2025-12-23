@@ -61,10 +61,10 @@ Pretty much everything you see.
 
 ## Running it locally
 
-If you want to poke around the code:
+If you want to poke around the code, make sure you have [Bun installed](https://bun.sh/):
 
 ```bash
 git clone https://github.com/leonardonapoless/leocodes.git
 cd leocodes
-npm install
-npm run dev
+bun install
+bun run dev

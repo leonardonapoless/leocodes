@@ -201,7 +201,7 @@ const Desktop = () => {
     const handleIconDoubleClick = (icon: IconState) => {
         switch (icon.id) {
             case 'linkedin':
-                window.open('https://www.linkedin.com/in/leonardo-napoles/', '_blank');
+                window.open('https://www.linkedin.com/in/leonardonapoles/', '_blank');
                 break;
 
             case 'github':

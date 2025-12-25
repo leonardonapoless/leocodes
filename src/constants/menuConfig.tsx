@@ -63,7 +63,7 @@ export const getMenus = (onOpenWindow: (id: string) => void, activeMenu: string 
     leocodes: {
         label: 'LeoCodes',
         items: [
-            { label: 'My Linkedin', action: () => window.open('https://www.linkedin.com/in/leonardo-napoles/') },
+            { label: 'My Linkedin', action: () => window.open('https://www.linkedin.com/in/leonardonapoles/') },
             { label: 'About Me', action: () => onOpenWindow('about') },
             { label: 'Contact Me', action: () => onOpenWindow('contactMe') }
         ]

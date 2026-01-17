@@ -19,9 +19,7 @@
 
 <hr />
 
-## What works?
-
-Pretty much everything you see.
+## Overview
 
 <table>
   <tr>

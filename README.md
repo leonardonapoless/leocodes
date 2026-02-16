@@ -12,7 +12,6 @@
 
   <p>
     I built this out of a deep nostalgia for an era I never actually lived through. I wanted to experience that beige aesthetic and hear the satisfying clicks of a simpler time. It is built with React but styled to look like System 6/7 using the awesome <code>System.css</code> library.
-    
 
   </p>
 </div>
@@ -35,6 +34,10 @@
     <td>The icons are functional and open actual windows. "About Me" covers the lore and "Projects" showcases the code.</td>
   </tr>
   <tr>
+    <td width="150px"><strong>Music Player</strong></td>
+    <td>A retro-style player with shuffle and a hand-picked selection of 80s/90s gems. It's packed with rave and "computer music coded" vibes that fit the site's soul perfectly. Hehe.</td>
+  </tr>
+  <tr>
     <td width="150px"><strong>Sound</strong></td>
     <td>It clicks and beeps. (You can mute your tab if you hate fun).</td>
   </tr>
@@ -54,15 +57,3 @@
     </tr>
   </table>
 </div>
-
-<br />
-
-## Running it locally
-
-If you want to poke around the code, make sure you have [Bun installed](https://bun.sh/):
-
-```bash
-git clone https://github.com/leonardonapoless/leocodes.git
-cd leocodes
-bun install
-bun run dev

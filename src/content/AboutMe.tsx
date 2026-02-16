@@ -15,7 +15,7 @@ const AboutMe = () => (
             </div>
             <div className="field-row skill-row-2">
                 <label htmlFor="swiftui" style={{ fontSize: '22px' }}>SwiftUI</label>
-                <label htmlFor="clang" style={{ fontSize: '22px' }}>C</label>
+                <label htmlFor="clang" style={{ fontSize: '22px' }}>C/C++</label>
             </div>
         </fieldset>
 

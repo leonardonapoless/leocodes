@@ -61,6 +61,13 @@ const Projects = ({ onOpenVideo, onOpenBrowser, onOpenImage }: ProjectsProps) =>
             description: 'A native macOS app for designing and simulating finite automata, built with SwiftUI.',
             githubLink: 'https://github.com/leonardonapoless/AutomataStudio',
             demoLink: '',
+        },
+        {
+            id: 8, name: 'Blobber',
+            technologies: ['Swift', 'Metal'],
+            description: "A simple Metal blob shader made for my Computer Graphics studies. It uses metaballs for a liquid effect, push it with the cursor or hit Space to interact with it and change its shape.",
+            githubLink: 'https://github.com/leonardonapoless/Blobber',
+            demoLink: '',
         }
     ];
 

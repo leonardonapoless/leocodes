@@ -24,5 +24,6 @@ export const INITIAL_WINDOWS: Record<string, WindowState> = {
     doom: { isOpen: false, isActive: false, x: 100, y: 50, width: 1280, height: 720 },
     doomManual: { isOpen: false, isActive: false, x: 200, y: 150, width: 900, height: 600 },
     imageViewer: { isOpen: false, isActive: false, x: 150, y: 150, width: 800, height: 600, imageUrl: '', title: 'Image Viewer' },
-    snake: { isOpen: false, isActive: false, x: 400, y: 100, width: 420, height: 650, minWidth: 420, minHeight: 650, title: 'Snake' }
+    snake: { isOpen: false, isActive: false, x: 400, y: 100, width: 420, height: 650, minWidth: 420, minHeight: 650, title: 'Snake' },
+    musicPlayer: { isOpen: false, isActive: false, x: 600, y: 150, width: 320, height: 480, title: 'iTunes' }
 };

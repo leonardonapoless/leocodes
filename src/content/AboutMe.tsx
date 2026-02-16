@@ -17,10 +17,6 @@ const AboutMe = () => (
                 <label htmlFor="swiftui" style={{ fontSize: '22px' }}>SwiftUI</label>
                 <label htmlFor="clang" style={{ fontSize: '22px' }}>C</label>
             </div>
-            <div className='field-row skill-row-3'>
-                <label htmlFor='mvvm' style={{ fontSize: '22px' }}>MVVM</label>
-                <label htmlFor='htmlcssjs' style={{ fontSize: '22px' }}>HTML/CSS/JS</label>
-            </div>
         </fieldset>
 
         <br />

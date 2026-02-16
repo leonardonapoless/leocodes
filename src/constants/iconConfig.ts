@@ -2,6 +2,7 @@ import fileIcon from '../assets/fileicon.svg';
 import folderIcon from '../assets/folder.svg';
 import globeIcon from '../assets/Global.svg';
 import leocodesIcon from '../assets/leocodes_logo_bw_big.svg';
+import itunesIcon from '../assets/itunes-1.webp';
 
 export interface IconState {
     id: string;
@@ -19,4 +20,5 @@ export const INITIAL_ICONS: IconState[] = [
     { id: 'projects', label: 'Projects', x: 0, y: 300, windowKey: 'projects', iconSrc: fileIcon },
     { id: 'contactMe', label: 'Contact Me', x: 200, y: 150, windowKey: 'contactMe', iconSrc: fileIcon },
     { id: 'games', label: 'Games', x: 0, y: 380, windowKey: 'games', iconSrc: folderIcon },
+    { id: 'musicPlayer', label: 'iTunes', x: 0, y: 460, windowKey: 'musicPlayer', iconSrc: itunesIcon },
 ];

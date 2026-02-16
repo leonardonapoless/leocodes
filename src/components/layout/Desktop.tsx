@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import MenuBar from '../ui/MenuBar';
 import Window from '../ui/Window';
 import Icon from '../ui/Icon';
@@ -13,21 +13,48 @@ import Doom from '../../content/Doom';
 import DoomManual from '../../content/DoomManual';
 import Snake from '../../content/Snake';
 import MobileNavButton from '../ui/MobileNavButton';
+import MusicPlayer from '../../components/music-player/MusicPlayer';
 
 import ErrorBoundary from '../ErrorBoundary';
 import { WINDOW_Z } from '../../constants/designTokens';
 import { INITIAL_WINDOWS, WindowState } from '../../constants/windowConfig';
 import { INITIAL_ICONS, IconState } from '../../constants/iconConfig';
 
-const Desktop = () => {
+interface DesktopProps {
+    isBooted?: boolean;
+}
+
+const Desktop = ({ isBooted = true }: DesktopProps) => {
     const [windows, setWindows] = useState<Record<string, WindowState>>(INITIAL_WINDOWS);
 
     const [icons, setIcons] = useState<IconState[]>(INITIAL_ICONS);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
+    const [shouldAutoPlayMusic, setShouldAutoPlayMusic] = useState(false);
+    const [activeMedia, setActiveMedia] = useState<'none' | 'video' | 'music'>('none');
+
+    const handleVideoPlay = useCallback(() => {
+        setActiveMedia('video');
+    }, []);
+
+    const handleMusicPlay = useCallback(() => {
+        setActiveMedia('music');
+    }, []);
+
+    useEffect(() => {
+        let timer: ReturnType<typeof setTimeout>;
+        if (isBooted) {
+            timer = setTimeout(() => {
+                setShouldAutoPlayMusic(true);
+            }, 1800);
+        }
+        return () => clearTimeout(timer);
+    }, [isBooted]);
+
     useEffect(() => {
         const handleResize = () => {
             const width = window.innerWidth;
+            const height = window.innerHeight;
             const mobile = width <= 768;
             setIsMobile(mobile);
 
@@ -43,6 +70,20 @@ const Desktop = () => {
                         x: width - xOffset
                     };
                 }));
+
+                setWindows(prev => {
+                    const playerWidth = 320;
+                    const playerHeight = 215;
+
+                    return {
+                        ...prev,
+                        musicPlayer: {
+                            ...prev.musicPlayer,
+                            x: width - playerWidth - 60,
+                            y: height - playerHeight - 50
+                        }
+                    };
+                });
             } else {
                 setIcons(INITIAL_ICONS);
             }
@@ -51,12 +92,25 @@ const Desktop = () => {
         window.addEventListener('resize', handleResize);
         handleResize();
 
+        setWindows(prev => {
+            return {
+                ...prev,
+                musicPlayer: {
+                    ...prev.musicPlayer,
+                    isOpen: true,
+                    width: 320,
+                    height: 215
+                }
+            };
+        });
+
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
 
     const [selectedIconId, setSelectedIconId] = useState<string | null>(null);
     const [simulateCrash, setSimulateCrash] = useState(false);
+    const musicPlayerOriginalY = useRef<number | null>(null);
 
     if (simulateCrash) {
         const crash: any = null;
@@ -160,7 +214,6 @@ const Desktop = () => {
             return newWindows;
         });
     };
-
     const closeWindow = (key: string) => {
         setWindows(prev => ({
             ...prev,
@@ -216,23 +269,62 @@ const Desktop = () => {
         }
     };
 
+    const handlePlaylistToggle = (isOpen: boolean) => {
+        setWindows(prev => {
+            const currentWin = prev.musicPlayer;
+            const targetHeight = isOpen ? 500 : 215;
+            let newY = currentWin.y;
+
+            if (isOpen) {
+                musicPlayerOriginalY.current = currentWin.y;
+
+                if (newY + targetHeight > window.innerHeight) {
+                    newY = Math.max(0, window.innerHeight - targetHeight - 40);
+                }
+            } else {
+                if (musicPlayerOriginalY.current !== null) {
+                    newY = musicPlayerOriginalY.current;
+                    musicPlayerOriginalY.current = null;
+                }
+            }
+
+            return {
+                ...prev,
+                musicPlayer: {
+                    ...currentWin,
+                    height: targetHeight,
+                    y: newY
+                }
+            };
+        });
+    };
+
     return (
         <div
             className="desktop-container"
             onClick={() => setSelectedIconId(null)}
             style={{
                 width: '100vw',
-                height: '100vh',
+                height: isMobile ? 'auto' : '100dvh',
+                minHeight: '100dvh',
                 backgroundColor: '#408080',
                 backgroundImage: 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==")',
                 backgroundSize: '4px 4px',
+                backgroundAttachment: 'fixed',
                 position: 'relative',
-                overflow: isMobile ? 'auto' : 'hidden',
-                WebkitOverflowScrolling: 'touch'
+                overflow: 'visible',
+                WebkitOverflowScrolling: 'touch',
+                paddingBottom: isMobile ? 'calc(100px + env(safe-area-inset-bottom))' : '0'
             }}
         >
             <MenuBar onOpenWindow={openWindow} onCrash={() => setSimulateCrash(true)} />
-            <div className={isMobile ? "mobile-layout" : ""} style={{ paddingTop: '30px', height: isMobile ? 'auto' : 'calc(100% - 30px)', position: 'relative', minHeight: 'calc(100vh - 30px)' }}>
+            <div className={isMobile ? "mobile-layout" : ""} style={{
+                paddingTop: '30px',
+                height: isMobile ? 'auto' : 'calc(100dvh - 30px)',
+                position: 'relative',
+                minHeight: 'calc(100dvh - 30px)',
+                paddingBottom: isMobile ? 'env(safe-area-inset-bottom)' : '0'
+            }}>
 
                 {isMobile && (
                     <div style={{
@@ -350,7 +442,13 @@ const Desktop = () => {
                         }}
                         isMobile={isMobile}
                     >
-                        {windows.video.videoId && <VideoPlayer key={`${windows.video.videoId}-${isMobile}`} videoId={windows.video.videoId} isMobile={isMobile} />}
+                        {windows.video.videoId && <VideoPlayer
+                            key={`${windows.video.videoId}-${isMobile}`}
+                            videoId={windows.video.videoId}
+                            isMobile={isMobile}
+                            onPlay={handleVideoPlay}
+                            shouldPause={activeMedia === 'music'}
+                        />}
                     </Window>
                 </ErrorBoundary>
 
@@ -514,6 +612,37 @@ const Desktop = () => {
                     >
                         <Snake />
                     </Window>
+
+                </ErrorBoundary>
+
+                <ErrorBoundary key={`musicPlayer-boundary-${windows.musicPlayer?.isOpen}`}>
+                    <Window
+                        id="window-musicPlayer"
+                        title={windows.musicPlayer?.title || "iTunes"}
+                        isOpen={windows.musicPlayer?.isOpen}
+                        isActive={windows.musicPlayer?.isActive}
+                        onClose={() => closeWindow('musicPlayer')}
+                        onFocus={() => focusWindow('musicPlayer')}
+                        onPositionChange={(pos) => updateWindowPosition('musicPlayer', pos)}
+                        onSizeChange={(size) => updateWindowSize('musicPlayer', size)}
+                        noPadding={true}
+                        style={{
+                            top: windows.musicPlayer?.y,
+                            left: windows.musicPlayer?.x,
+                            width: windows.musicPlayer?.width,
+                            height: windows.musicPlayer?.height,
+                            zIndex: windows.musicPlayer?.isActive ? WINDOW_Z.media : 15
+                        }}
+                        isMobile={isMobile}
+                    >
+                        <MusicPlayer
+                            isPlaylistOpen={windows.musicPlayer?.height > 300}
+                            onPlaylistToggle={handlePlaylistToggle}
+                            shouldAutoPlay={shouldAutoPlayMusic}
+                            shouldPause={activeMedia === 'video'}
+                            onPlay={handleMusicPlay}
+                        />
+                    </Window>
                 </ErrorBoundary>
 
                 {isMobile && (() => {
@@ -522,7 +651,7 @@ const Desktop = () => {
                     return <MobileNavButton targetId={targetId} />;
                 })()}
             </div>
-        </div>
+        </div >
     );
 };
 

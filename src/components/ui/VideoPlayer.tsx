@@ -4,9 +4,11 @@ import { loadYouTubeApi, YT } from '../../utils/loadYouTubeApi';
 interface VideoPlayerProps {
     videoId: string;
     isMobile?: boolean;
+    onPlay?: () => void;
+    shouldPause?: boolean;
 }
 
-const VideoPlayer = ({ videoId, isMobile = false }: VideoPlayerProps) => {
+const VideoPlayer = ({ videoId, isMobile = false, onPlay, shouldPause = false }: VideoPlayerProps) => {
     const playerRef = useRef<YT.Player | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [volume, setVolume] = useState(50);
@@ -15,6 +17,19 @@ const VideoPlayer = ({ videoId, isMobile = false }: VideoPlayerProps) => {
     const [isReady, setIsReady] = useState(false);
     const animationFrameRef = useRef<number | null>(null);
     const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    const onPlayRef = useRef(onPlay);
+
+    useEffect(() => {
+        onPlayRef.current = onPlay;
+    }, [onPlay]);
+
+    useEffect(() => {
+        if (shouldPause && isPlaying && playerRef.current) {
+            playerRef.current.pauseVideo();
+            setIsPlaying(false);
+        }
+    }, [shouldPause, isPlaying]);
 
     useEffect(() => {
         let isMounted = true;
@@ -31,6 +46,7 @@ const VideoPlayer = ({ videoId, isMobile = false }: VideoPlayerProps) => {
                     width: '100%',
                     videoId: videoId,
                     playerVars: {
+                        autoplay: 1,
                         playsinline: 1,
                         controls: isMobile ? 1 : 0,
                         modestbranding: 1,
@@ -62,6 +78,14 @@ const VideoPlayer = ({ videoId, isMobile = false }: VideoPlayerProps) => {
             }
         };
     }, [videoId, isMobile]);
+
+    const onPlayerStateChange = (event: YT.OnStateChangeEvent) => {
+        setIsPlaying(event.data === 1);
+        if (event.data === 1) {
+            setDuration(event.target.getDuration());
+            if (onPlayRef.current) onPlayRef.current();
+        }
+    };
 
     useEffect(() => {
         const updateTime = () => {
@@ -99,15 +123,7 @@ const VideoPlayer = ({ videoId, isMobile = false }: VideoPlayerProps) => {
         setIsReady(true);
         setDuration(event.target.getDuration());
         event.target.setVolume(volume);
-        // Only auto-play if permitted (some mobile browsers block it, but we can try)
-        // event.target.playVideo(); 
-    };
-
-    const onPlayerStateChange = (event: YT.OnStateChangeEvent) => {
-        setIsPlaying(event.data === 1);
-        if (event.data === 1) {
-            setDuration(event.target.getDuration());
-        }
+        event.target.playVideo();
     };
 
     const togglePlay = () => {

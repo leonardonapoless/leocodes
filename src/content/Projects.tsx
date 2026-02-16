@@ -54,6 +54,16 @@ const Projects = ({ onOpenVideo, onOpenBrowser, onOpenImage }: ProjectsProps) =>
         },
     ];
 
+    const macosProjects: Project[] = [
+        {
+            id: 7, name: 'AutomataStudio',
+            technologies: ['Swift', 'SwiftUI'],
+            description: 'A native macOS app for designing and simulating finite automata, built with SwiftUI.',
+            githubLink: 'https://github.com/leonardonapoless/AutomataStudio',
+            demoLink: '',
+        }
+    ];
+
     const otherProjects: Project[] = [
         {
             id: 3, name: 'TrebleMaker',
@@ -216,6 +226,13 @@ const Projects = ({ onOpenVideo, onOpenBrowser, onOpenImage }: ProjectsProps) =>
             <fieldset>
                 <legend>iOS Projects</legend>
                 {renderProjectList(iosProjects)}
+            </fieldset>
+
+            <br />
+
+            <fieldset>
+                <legend>macOS Projects</legend>
+                {renderProjectList(macosProjects)}
             </fieldset>
 
             <br />

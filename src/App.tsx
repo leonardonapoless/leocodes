@@ -16,7 +16,7 @@ const App = () => {
     <div className="app-container">
       {showSplash && <BootSplash onComplete={() => setShowSplash(false)} />}
       <ErrorBoundary>
-        <Desktop />
+        <Desktop isBooted={!showSplash} />
       </ErrorBoundary>
     </div>
   );

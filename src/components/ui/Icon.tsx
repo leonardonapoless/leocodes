@@ -104,6 +104,7 @@ const Icon = ({ label, iconSrc, onDoubleClick, x, y, isSelected, onSelect, onDra
                 fontSize: '12px',
                 textAlign: 'center',
                 userSelect: 'none',
+                WebkitUserSelect: 'none',
                 whiteSpace: 'nowrap',
                 fontFamily: "'Chicago', 'Geneva', 'MS Sans Serif', sans-serif"
             }}>

@@ -10,6 +10,7 @@ html {
   min-height: 100dvh;
   margin: 0;
   padding: 0;
+  overflow: hidden;
 }
 
 body {
@@ -24,12 +25,14 @@ body {
   background-attachment: fixed;
   background-color: #408080;
   overscroll-behavior: none;
+  overflow: hidden;
 }
 
 #root,
 .app-container {
   min-height: 100dvh;
   width: 100%;
+  overflow: hidden;
 }
 
 input,

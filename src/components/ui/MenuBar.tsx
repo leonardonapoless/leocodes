@@ -76,6 +76,7 @@ const MenuBar = ({ onOpenWindow, onCrash }: MenuBarProps) => {
         background: '#fff',
         height: '32px',
         userSelect: 'none',
+        WebkitUserSelect: 'none',
         fontFamily: 'Chicago, sans-serif'
       }}
     >

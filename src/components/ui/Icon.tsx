@@ -12,11 +12,14 @@ interface IconProps {
     onDrag?: (pos: { x: number; y: number }) => void;
     size?: number;
     style?: React.CSSProperties;
+    isWindowOpen?: boolean;
 }
 
-const Icon = ({ label, iconSrc, onDoubleClick, x, y, isSelected, onSelect, onDrag, size = 48, style }: IconProps) => {
+const Icon = ({ label, iconSrc, onDoubleClick, x, y, isSelected, onSelect, onDrag, size = 48, style, isWindowOpen = false }: IconProps) => {
     const [isDragging, setIsDragging] = useState(false);
     const dragOffset = useRef({ x: 0, y: 0 });
+    const startPos = useRef({ x: 0, y: 0 });
+    const hasMoved = useRef(false);
 
     const lastClickTime = useRef(0);
 
@@ -27,12 +30,14 @@ const Icon = ({ label, iconSrc, onDoubleClick, x, y, isSelected, onSelect, onDra
         const timeDiff = currentTime - lastClickTime.current;
 
         if (timeDiff < 300) {
-            playSound('flap');
+            if (!isWindowOpen) playSound('flap');
             onDoubleClick && onDoubleClick();
         } else {
-            playSound('fsel');
+            if (!isWindowOpen) playSound('fsel');
             onSelect(e);
             setIsDragging(true);
+            hasMoved.current = false;
+            startPos.current = { x: e.clientX, y: e.clientY };
             dragOffset.current = {
                 x: e.clientX - x,
                 y: e.clientY - y
@@ -44,6 +49,13 @@ const Icon = ({ label, iconSrc, onDoubleClick, x, y, isSelected, onSelect, onDra
     useEffect(() => {
         const handleMouseMove = (e: globalThis.MouseEvent) => {
             if (isDragging && onDrag) {
+                if (!hasMoved.current) {
+                    const dx = Math.abs(e.clientX - startPos.current.x);
+                    const dy = Math.abs(e.clientY - startPos.current.y);
+                    if (dx > 3 || dy > 3) {
+                        hasMoved.current = true;
+                    }
+                }
                 onDrag({
                     x: e.clientX - dragOffset.current.x,
                     y: e.clientY - dragOffset.current.y
@@ -52,6 +64,7 @@ const Icon = ({ label, iconSrc, onDoubleClick, x, y, isSelected, onSelect, onDra
         };
 
         const handleMouseUp = () => {
+            if (isDragging && hasMoved.current) playSound('fdrp');
             setIsDragging(false);
         };
 

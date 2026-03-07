@@ -135,6 +135,7 @@ const MenuBar = ({ onOpenWindow, onCrash }: MenuBarProps) => {
                       key={index}
                       onClick={() => {
                         if (!item.disabled) {
+                          playSound('mnus');
                           item.action && item.action();
                           setActiveMenu(null);
                         }

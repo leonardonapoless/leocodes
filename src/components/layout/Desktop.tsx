@@ -19,6 +19,7 @@ import ErrorBoundary from '../ErrorBoundary';
 import { WINDOW_Z } from '../../constants/designTokens';
 import { INITIAL_WINDOWS, WindowState } from '../../constants/windowConfig';
 import { INITIAL_ICONS, IconState } from '../../constants/iconConfig';
+import { playSound } from '../../utils/soundManager';
 
 interface DesktopProps {
     isBooted?: boolean;
@@ -119,6 +120,9 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
 
 
     const openWindow = (key: string) => {
+        if (windows[key]?.isOpen && !windows[key]?.isActive) {
+            playSound('wact');
+        }
         setWindows(prev => {
             const newWindows = { ...prev };
             Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
@@ -128,6 +132,9 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
     };
 
     const openVideo = (videoId: string, title?: string, width?: number, height?: number, x?: number, y?: number) => {
+        if (windows.video?.isOpen && !windows.video?.isActive) {
+            playSound('wact');
+        }
         setWindows(prev => {
             const newWindows = { ...prev };
             Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
@@ -147,6 +154,9 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
     };
 
     const openBrowser = (url: string, title?: string) => {
+        if (windows.browser?.isOpen && !windows.browser?.isActive) {
+            playSound('wact');
+        }
         setWindows(prev => {
             const newWindows = { ...prev };
             Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
@@ -162,6 +172,9 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
     };
 
     const openImage = (imageUrl: string, title?: string) => {
+        if (windows.imageViewer?.isOpen && !windows.imageViewer?.isActive) {
+            playSound('wact');
+        }
         setWindows(prev => {
             const newWindows = { ...prev };
             Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
@@ -177,6 +190,9 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
     };
 
     const openDoom = () => {
+        if (windows.doom?.isOpen && !windows.doom?.isActive) {
+            playSound('wact');
+        }
         setWindows(prev => {
             const newWindows = { ...prev };
             Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
@@ -190,6 +206,9 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
     };
 
     const openDoomManual = () => {
+        if (windows.doomManual?.isOpen && !windows.doomManual?.isActive) {
+            playSound('wact');
+        }
         setWindows(prev => {
             const newWindows = { ...prev };
             Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
@@ -203,6 +222,9 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
     };
 
     const openSnake = () => {
+        if (windows.snake?.isOpen && !windows.snake?.isActive) {
+            playSound('wact');
+        }
         setWindows(prev => {
             const newWindows = { ...prev };
             Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
@@ -222,6 +244,9 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
     };
 
     const focusWindow = (key: string) => {
+        if (windows[key]?.isOpen && !windows[key]?.isActive) {
+            playSound('wact');
+        }
         setWindows(prev => {
             const newWindows = { ...prev };
             Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
@@ -351,6 +376,7 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
                                     onDoubleClick={() => handleIconDoubleClick(icon)}
                                     onDrag={() => { }}
                                     size={42}
+                                    isWindowOpen={Boolean(icon.windowKey && windows[icon.windowKey]?.isOpen)}
                                 />
                             </div>
                         ))}
@@ -368,6 +394,7 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
                         }}
                         onDoubleClick={() => handleIconDoubleClick(icon)}
                         onDrag={(pos) => handleIconDrag(icon.id, pos)}
+                        isWindowOpen={Boolean(icon.windowKey && windows[icon.windowKey]?.isOpen)}
                     />
                 ))}
 

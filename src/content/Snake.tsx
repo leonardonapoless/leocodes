@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import appleLogo from '@sakun/system.css/icon/apple.svg';
+import { playSound } from '../utils/soundManager';
 
 const GRID_SIZE = 20;
 const SPEED = 130;
@@ -198,7 +199,7 @@ const Snake = () => {
                                 backgroundColor: 'rgba(15, 56, 15, 0.9)', color: PALETTE.bg, zIndex: 10
                             }}>
                                 <h2 className="retro-text" style={{ margin: 0, fontSize: '18px', textShadow: '2px 2px 0px #000', marginBottom: '20px' }}>SNAKE</h2>
-                                <button onClick={() => setGameStarted(true)} className="retro-text" style={{
+                                <button onMouseDown={() => playSound('btnp')} onMouseUp={() => playSound('btnr')} onClick={() => setGameStarted(true)} className="retro-text" style={{
                                     background: PALETTE.bg, color: PALETTE.fg, border: '2px solid ' + PALETTE.fg, padding: '10px 20px',
                                     fontSize: '12px', cursor: 'pointer', boxShadow: '2px 2px 0px #000'
                                 }}>PLAY</button>
@@ -212,7 +213,7 @@ const Snake = () => {
                             }}>
                                 <h2 className="retro-text" style={{ margin: 0, fontSize: '16px', textShadow: '2px 2px 0px #000' }}>GAME OVER</h2>
                                 <div style={{ height: 20 }} />
-                                <button onClick={resetGame} className="retro-text" style={{
+                                <button onMouseDown={() => playSound('btnp')} onMouseUp={() => playSound('btnr')} onClick={resetGame} className="retro-text" style={{
                                     background: PALETTE.bg, color: PALETTE.fg, border: '2px solid ' + PALETTE.fg, padding: '10px',
                                     fontSize: '10px', cursor: 'pointer', boxShadow: '2px 2px 0px #000'
                                 }}>RESTART</button>

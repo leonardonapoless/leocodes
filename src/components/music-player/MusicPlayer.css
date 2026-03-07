@@ -147,6 +147,12 @@
     gap: 4px;
 }
 
+@media (max-width: 768px) {
+    .volume-control {
+        display: none;
+    }
+}
+
 .volume-label {
     font-size: 10px;
     font-family: 'Chicago', sans-serif;

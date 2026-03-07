@@ -45,10 +45,19 @@ button {
 * {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+input,
+textarea {
+  -webkit-user-select: auto;
+  user-select: auto;
 }
 
 .window-pane {
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior: none;
 }
 
 .window,

@@ -160,7 +160,6 @@
 
 .volume-slider-container {
     width: 55px;
-    /* Increased from 45px for better control */
     position: relative;
     display: flex;
     align-items: center;
@@ -169,6 +168,7 @@
 .playlist-container {
     flex: 1;
     overflow-y: auto;
+    overscroll-behavior-y: none;
     background-color: white;
     border-top: 1px solid #000;
     margin: 0;

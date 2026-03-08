@@ -11,7 +11,7 @@ import ContactMe from '../../content/ContactMe';
 import Games from '../../content/Games';
 import Doom from '../../content/Doom';
 import DoomManual from '../../content/DoomManual';
-import Snake from '../../content/Snake';
+import { Snake } from '../../content/Snake/Snake';
 import MobileNavButton from '../ui/MobileNavButton';
 import MusicPlayer from '../../components/music-player/MusicPlayer';
 

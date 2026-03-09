@@ -52,7 +52,9 @@ const BootSplash = ({ onComplete }: BootSplashProps) => {
                 zIndex: 99999,
                 opacity: isVisible ? 1 : 0,
                 transition: 'opacity 0.5s ease-in-out',
-                pointerEvents: hasStarted ? 'none' : 'auto'
+                pointerEvents: hasStarted ? 'none' : 'auto',
+                touchAction: 'none',
+                overscrollBehavior: 'none'
             }}>
             {showContent && (
                 <>

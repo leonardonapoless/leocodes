@@ -166,6 +166,7 @@ const Window = ({ id, title, children, onClose, isOpen, style, isActive, onFocus
     };
 
     useEffect(() => {
+        if (isMobile) return;
         const container = scrollContainerRef.current;
         if (container) {
             const preventDefault = (e: Event) => {
@@ -176,7 +177,7 @@ const Window = ({ id, title, children, onClose, isOpen, style, isActive, onFocus
                 container.removeEventListener('touchmove', preventDefault);
             };
         }
-    }, []);
+    }, [isMobile]);
     if (!isOpen) return null;
 
     const titleRef = useRef<HTMLHeadingElement>(null);

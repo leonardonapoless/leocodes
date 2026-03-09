@@ -337,8 +337,9 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
                 backgroundSize: '4px 4px',
                 backgroundAttachment: 'fixed',
                 position: 'relative',
-                overflow: 'hidden',
+                overflow: isMobile ? 'visible' : 'hidden',
                 WebkitOverflowScrolling: 'touch',
+                overflowX: 'hidden',
                 paddingBottom: isMobile ? 'calc(100px + env(safe-area-inset-bottom))' : '0'
             }}
         >

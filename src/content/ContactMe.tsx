@@ -147,7 +147,8 @@ const ContactMe = () => {
                             type="submit"
                             className="btn"
                             disabled={isSubmitting}
-                            onClick={() => playSound('btnp')}
+                            onMouseDown={() => playSound('btnp')}
+                            onMouseUp={() => playSound('btnr')}
                         >
                             {isSubmitting ? 'Sending...' : 'Send Email'}
                         </button>

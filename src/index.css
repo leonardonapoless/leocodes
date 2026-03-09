@@ -45,10 +45,19 @@ button {
 * {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+input,
+textarea {
+  -webkit-user-select: auto;
+  user-select: auto;
 }
 
 .window-pane {
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior: none;
 }
 
 .window,
@@ -145,28 +154,47 @@ button {
 /* mobile layout */
 @media (max-width: 768px) {
 
-  .mobile-layout::-webkit-scrollbar,
-  .desktop-container::-webkit-scrollbar {
-    display: none;
+  html,
+  body,
+  #root,
+  .app-container {
+    height: 100dvh !important;
+    width: 100vw !important;
+    overflow: hidden !important;
+    position: fixed !important;
+    overscroll-behavior: none !important;
   }
 
   .desktop-container {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    height: 100dvh !important;
+    width: 100vw !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior-y: none !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar,
+  #root::-webkit-scrollbar,
+  .app-container::-webkit-scrollbar,
+  .mobile-layout::-webkit-scrollbar,
+  .desktop-container::-webkit-scrollbar {
+    display: none !important;
   }
 
   .mobile-layout {
     display: flex;
     flex-direction: column;
     height: auto !important;
-    min-height: 100dvh;
+    min-height: 100%;
     overflow-y: visible !important;
     overflow-x: hidden !important;
     padding-bottom: 40px;
     box-sizing: border-box;
     width: 100vw;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
   }
 
   .mobile-layout .window {
@@ -184,6 +212,8 @@ button {
 
   .mobile-layout .window-pane {
     overflow-x: hidden !important;
+    overflow-y: visible !important;
+    overscroll-behavior: auto !important;
     width: 100% !important;
     box-sizing: border-box !important;
   }

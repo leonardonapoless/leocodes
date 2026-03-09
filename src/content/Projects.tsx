@@ -2,6 +2,7 @@ import React from 'react';
 import swiftIcon from '../assets/swift-96x96_2x.png';
 import swiftuiIcon from '../assets/swiftui-96x96_2x.png';
 import javaIcon from '../assets/java.svg';
+import javafxIcon from '../assets/javafxicon.png';
 import javascriptIcon from '../assets/javascript.svg';
 import htmlIcon from '../assets/html.svg';
 import cssIcon from '../assets/css.svg';
@@ -12,13 +13,14 @@ import juceIcon from '../assets/juceIcon.png';
 import metalIcon from '../assets/metalIcon.png';
 import openglIcon from '../assets/openglIcon.png';
 import typescriptIcon from '../assets/typescriptIcon.png';
+import sqliteIcon from '../assets/sqliteicon.png';
 import trebleMakerImage from '../assets/treblemaker_demo.png';
 
 interface Project {
     id: number;
     name: string;
     technologies: string[];
-    description: string;
+    description: string | React.ReactNode;
     githubLink: string;
     demoLink: string;
     videoSize?: { width: number; height: number };
@@ -46,7 +48,7 @@ const Projects = ({ onOpenVideo, onOpenBrowser, onOpenImage }: ProjectsProps) =>
         {
             id: 2, name: 'TicTak',
             technologies: ['Swift', 'SwiftUI'],
-            description: 'A simple tictactoe iOS app made in Swift and SwiftUI using the MVVM architecture.',
+            description: <>A simple tictactoe iOS app made in <i><b>Swift</b></i> and <i><b>SwiftUI</b></i> using the <i><b>MVVM</b></i> architecture.</>,
             githubLink: 'https://github.com/leonardonapoless/tictak',
             demoLink: 'https://youtube.com/shorts/sFOXO_k8Tg8?si=RTLpRh8eiyk4DQ09',
             videoSize: { width: 550, height: 700 },
@@ -58,14 +60,14 @@ const Projects = ({ onOpenVideo, onOpenBrowser, onOpenImage }: ProjectsProps) =>
         {
             id: 7, name: 'AutomataStudio',
             technologies: ['Swift', 'SwiftUI'],
-            description: 'A native macOS app for designing and simulating finite automata, built with SwiftUI.',
+            description: <>A native macOS app for designing and simulating finite automata, built with <i><b>SwiftUI</b></i>.</>,
             githubLink: 'https://github.com/leonardonapoless/AutomataStudio',
             demoLink: '',
         },
         {
             id: 8, name: 'Blobber',
             technologies: ['Swift', 'Metal'],
-            description: "A simple Metal blob shader made for my Computer Graphics studies. It uses metaballs for a liquid effect, push it with the cursor or hit Space to interact with it and change its shape.",
+            description: <>A simple <i><b>Metal</b></i> blob shader made for my Computer Graphics studies. It uses metaballs for a liquid effect, push it with the cursor or hit Space to interact with it and change its shape.</>,
             githubLink: 'https://github.com/leonardonapoless/Blobber',
             demoLink: '',
         }
@@ -75,10 +77,17 @@ const Projects = ({ onOpenVideo, onOpenBrowser, onOpenImage }: ProjectsProps) =>
         {
             id: 3, name: 'TrebleMaker',
             technologies: ['C++', 'JUCE'],
-            description: 'A simple high-shelf filter plugin built with JUCE and C++.',
+            description: <>A simple high-shelf filter plugin built with <i><b>JUCE</b></i> and <i><b>C++</b></i>.</>,
             githubLink: 'https://github.com/leonardonapoless/treblemaker',
             demoLink: '',
             demoImage: trebleMakerImage
+        },
+        {
+            id: 9, name: 'Relikd',
+            technologies: ['JavaFX', 'SQLite'],
+            description: <>A vintage computer catalog application built with <i><b>JavaFX</b></i> and <i><b>SQLite</b></i> to browse classic hardware, featuring search and async image caching.</>,
+            githubLink: 'https://github.com/leonardonapoless/Relikd',
+            demoLink: ''
         },
         {
             id: 4, name: 'Sacolão Rodrigues',
@@ -90,14 +99,14 @@ const Projects = ({ onOpenVideo, onOpenBrowser, onOpenImage }: ProjectsProps) =>
         {
             id: 5, name: 'Calc U Later',
             technologies: ['Java'],
-            description: 'Simple Calculator App in Java',
+            description: <>Simple Calculator App in <i><b>Java</b></i></>,
             githubLink: 'https://github.com/leonardonapoless/calc_u_later',
             demoLink: ''
         },
         {
             id: 6, name: 'LeoCodes - Portfolio',
             technologies: ['HTML', 'CSS', 'TypeScript', 'React', 'Vite'],
-            description: 'My personal Classic Mac OS style portfolio website built with React and Vite.',
+            description: <>My personal Classic Mac OS style portfolio website built with <i><b>React</b></i> and <i><b>Vite</b></i>.</>,
             githubLink: 'https://github.com/leonardonapoless/leocodes',
             demoLink: 'https://leocodes.vercel.app'
         }
@@ -143,7 +152,7 @@ const Projects = ({ onOpenVideo, onOpenBrowser, onOpenImage }: ProjectsProps) =>
         'Swift': { src: swiftIcon, filter: 'none', style: { height: '27px' } },
         'SwiftUI': { src: swiftuiIcon, filter: 'none', style: { height: '27px' } },
         'Java': { src: javaIcon, filter: 'none' },
-        'Java Swing': { src: javaIcon, filter: 'none' },
+        'JavaFX': { src: javafxIcon, filter: 'none', style: { height: '28px', paddingBottom: '9px' } },
         'JavaScript': { src: javascriptIcon },
         'TypeScript': { src: typescriptIcon, style: { height: '26px' } },
         'HTML': { src: htmlIcon },
@@ -153,9 +162,8 @@ const Projects = ({ onOpenVideo, onOpenBrowser, onOpenImage }: ProjectsProps) =>
         'C++': { src: cppIcon, filter: 'none', style: { height: '26px' } },
         'JUCE': { src: juceIcon, filter: 'none', style: { height: '25px' } },
         'Metal': { src: metalIcon, filter: 'none', style: { height: '28px' } },
-        'OpenGL': {
-            src: openglIcon, filter: 'none', style: { height: '50px', paddingTop: '2px' }
-        }
+        'OpenGL': { src: openglIcon, filter: 'none', style: { height: '50px', paddingTop: '2px' } },
+        'SQLite': { src: sqliteIcon, filter: 'none', style: { height: '22px', paddingBottom: '2px' } }
     };
 
     const renderProjectList = (projects: Project[], openByDefault = true) => (

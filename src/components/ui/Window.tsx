@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, ReactNode, CSSProperties, PointerEvent } from 'react';
-import { playSound } from '../../utils/soundManager';
+import { playSound, stopSound } from '../../utils/soundManager';
 
 interface WindowProps {
     id?: string;
@@ -133,34 +133,40 @@ const Window = ({ id, title, children, onClose, isOpen, style, isActive, onFocus
     }, [isOpen]);
 
     const scrollContainerRef = useRef<HTMLDivElement>(null);
-    let scrollTimeout: NodeJS.Timeout | undefined;
+    const scrollTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+    const isScrollSoundPlaying = useRef(false);
 
-    const lastScrollSoundTime = useRef(0);
+    useEffect(() => {
+        return () => {
+            if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+            if (isScrollSoundPlaying.current) stopSound('sbth');
+        };
+    }, []);
 
     const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
         const target = e.target as HTMLDivElement;
-        const isScrollable = target.scrollHeight > target.clientHeight;
+        if (target.scrollHeight <= target.clientHeight) return;
 
-        if (isScrollable) {
-            target.classList.add('scrolling');
+        target.classList.add('scrolling');
 
-            const now = Date.now();
-            if (now - lastScrollSoundTime.current > 150) {
-                playSound('sbth');
-                lastScrollSoundTime.current = now;
-            }
-
-            if (scrollTimeout) {
-                clearTimeout(scrollTimeout);
-            }
-
-            scrollTimeout = setTimeout(() => {
-                target.classList.remove('scrolling');
-            }, 1000);
+        if (!isScrollSoundPlaying.current) {
+            isScrollSoundPlaying.current = true;
+            playSound('sbth_attack');
+            playSound('sbth', { exclusive: true, loop: true });
         }
+
+        if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+
+        scrollTimeoutRef.current = setTimeout(() => {
+            target.classList.remove('scrolling');
+            stopSound('sbth');
+            playSound('sbth_decay');
+            isScrollSoundPlaying.current = false;
+        }, 150);
     };
 
     useEffect(() => {
+        if (isMobile) return;
         const container = scrollContainerRef.current;
         if (container) {
             const preventDefault = (e: Event) => {
@@ -171,7 +177,7 @@ const Window = ({ id, title, children, onClose, isOpen, style, isActive, onFocus
                 container.removeEventListener('touchmove', preventDefault);
             };
         }
-    }, []);
+    }, [isMobile]);
     if (!isOpen) return null;
 
     const titleRef = useRef<HTMLHeadingElement>(null);
@@ -221,12 +227,18 @@ const Window = ({ id, title, children, onClose, isOpen, style, isActive, onFocus
                 display: 'flex',
                 flexDirection: 'column'
             }}
-            onClick={onFocus}
+            onClick={() => {
+                onFocus();
+            }}
         >
             <div
                 className="title-bar"
                 onPointerDown={handlePointerDown}
-                onDoubleClick={() => !isMobile && setIsShaded(!isShaded)}
+                onDoubleClick={() => {
+                    if (isMobile) return;
+                    playSound(isShaded ? 'wexp' : 'wcol');
+                    setIsShaded(!isShaded);
+                }}
                 style={{ cursor: 'default', userSelect: 'none', WebkitUserSelect: 'none', position: 'relative' }}
             >
                 <button

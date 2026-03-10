@@ -1,5 +1,14 @@
 * {
   font-family: 'Chicago', 'Geneva', 'MS Sans Serif', sans-serif;
+  scrollbar-width: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 html {

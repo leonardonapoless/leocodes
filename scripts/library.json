@@ -2121,5 +2121,19 @@
     "trackName": "Watching Trees",
     "artistName": "Eleven Pond",
     "trackViewUrl": "https://music.apple.com/us/album/watching-trees/514203356?i=514203363&uo=4"
+  },
+  "billy ocean - caribbean queen (no more love on the run)": {
+    "artist": "Billy Ocean",
+    "title": "Caribbean Queen (No More Love On the Run)",
+    "originalLine": "Billy Ocean - Caribbean Queen (No More Love On the Run)",
+    "found": true,
+    "itunesId": 459720515,
+    "previewUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/a3/db/61/a3db61c3-0404-a1d6-6e39-2255e2f781b2/mzaf_2149166151765300793.plus.aac.p.m4a",
+    "artworkUrl100": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/2b/d7/d7/2bd7d77a-3cfc-1d99-a4f0-c8cedc7e3eb5/886443149571.jpg/100x100bb.jpg",
+    "artworkUrl60": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/2b/d7/d7/2bd7d77a-3cfc-1d99-a4f0-c8cedc7e3eb5/886443149571.jpg/60x60bb.jpg",
+    "collectionName": "Suddenly (Expanded Edition)",
+    "trackName": "Caribbean Queen (No More Love On the Run)",
+    "artistName": "Billy Ocean",
+    "trackViewUrl": "https://music.apple.com/us/album/caribbean-queen-no-more-love-on-the-run/459720412?i=459720515&uo=4"
   }
 }

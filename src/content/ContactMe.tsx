@@ -102,7 +102,7 @@ const ContactMe = () => {
                                 placeholder="Your full name"
                                 required
                                 disabled={isSubmitting}
-                                style={{ width: 'calc(100% - 110px)' }}
+                                style={{ width: 'calc(100% - 110px)', outline: 'none' }}
                             />
                         </div>
 
@@ -119,7 +119,7 @@ const ContactMe = () => {
                                 placeholder="johnappleseed@gmail.com"
                                 required
                                 disabled={isSubmitting}
-                                style={{ width: 'calc(100% - 110px)' }}
+                                style={{ width: 'calc(100% - 110px)', outline: 'none' }}
                             />
                         </div>
                     </fieldset>
@@ -137,7 +137,7 @@ const ContactMe = () => {
                                 required
                                 disabled={isSubmitting}
                                 rows={8}
-                                style={{ width: '100%', resize: 'vertical' }}
+                                style={{ width: '100%', resize: 'vertical', outline: 'none' }}
                             />
                         </div>
                     </fieldset>

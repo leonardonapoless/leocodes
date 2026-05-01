@@ -1,9 +1,12 @@
 The Cure - Just Like Heaven
+Cristopher Cross - Ride Like the Wind
 Dusky - Hildegard
 Eleven Pond - Watching Trees
 Crystal Castles - Char
 The Police - Every Little Thing She Does Is Magic
 Billy Ocean - Caribbean Queen (No More Love On the Run)
+George Benson - Give Me the Night
+Chaka Khan - Ain't Nobody
 Mix Maniacs - In the Mix (Super Slowed)
 The Prodigy - Everybody in the Place (Original)
 Prospa - Control the Party
@@ -12,6 +15,10 @@ LT - Darién Gap
 SL2 - On a Ragga Tip ’97 (Original Mix)
 The Prodigy - Out of Space
 Kraftwerk - Computer World
+Kraftwerk - It's More Fun to Compute
+Kraftwerk - Computer Love
+Kraftwerk - Transistor
+Kraftwerk - Airwaves
 Martin Dupont - Inside Out
 Azymuth - Last Summer In Rio
 Awesome 3 - Don’t Go (Second Movement)
@@ -43,10 +50,7 @@ Grimes - World Princess, Pt. II
 Nothing But Thieves - Trip Switch
 Unglued - Born In 94’ (feat. MC Conrad)
 Lennie De Ice - We Are I.E (Original Extended Edit)
-Dimension - UK
-UK Apache & Shy FX - Original Nuttah 25 (feat. IRAH) [Chase & Status Remix]
 Blame - Music Takes You
-Pendulum - Watercolour
 Logistics - Together
 Sub Focus & Wilkinson - Enter Night
 Dimension - Generator
@@ -54,7 +58,6 @@ Blame - Are You Dreaming
 Chase & Status - No Problem
 Unglued - Total XTC
 Code 23, S.P.Y & Shadow Child - Decipated
-Dimension - Techno
 Friction - Mad in the Jungle
 Bad Company UK - Nitrous
 Dimension - Automatik
@@ -67,17 +70,14 @@ Dimension - Raver
 Netsky - Rio (feat. Digital Farm Animals)
 Unglued - H to the A to the R to the D to the C to the O to the R to the E
 Dimension - In Bleach
-Trance Wax - Lifeline
 Blame - This Piano Track
 Logistics - Rhythm Track
-Culture Shock - Have It All (feat. Raphaella)
 Unglued - Reminisce
 Dimension - Love To Me
 Juan Atkins - Track Ten
 Shadow Child - Say It Now
 Inner City - Good Life
 Shadow Child - Ultra Magic
-Duke Dumont - The Giver (Reprise) [Dimension Remix]
 Shadow Child - Computer Controlled
 Frankie Knuckles - Your Love
 Shadow Child - Magic Waves
@@ -86,10 +86,11 @@ Shadow Child - 303 in the Mist (Bassline Mutationz)
 Jt Company - Don’t Deal with Us (Dusky Edit)
 Shadow Child - Gravity Slips
 Black Eyed Peas - Rock That Body
+Black Eyed Peas - Imma Be
+Far East Movement - Like a G6
 Shadow Child - Icy Moons
 Jet Le Parti - 12B
 Shadow Child - Mystik Vortex
-LNRT - The Cigarette
 She Past Away - Kasvetli Kutlama
 Crystal Castles - Vanished
 Nuovo Testamento - 2 Hearts
@@ -103,6 +104,8 @@ Smerz - Feisty
 Martin Dupont - He Saw the Light
 Grimes - REALiTi
 Class Actress - Terminally Chill
+A. G. Cook - Britpop
+Charli xcx - Apple
 DJ_Dave - React [R Tyler Edit]
 The Beatles - I Want to Hold Your Hand
 yunè pinku - Affection
@@ -112,7 +115,9 @@ Arcade Fire - The Suburbs
 Japanese Breakfast - Road Head
 The Beatles - Come Together
 Kourosh Yaghmaei - Dar Enteha
-Mary Middlefield - The Feast
+Himiko Kikuchi - Look Your Back!
+Phil Collins - I Cannot Belive It's True
+O.C. Smith - Little Green Apples
 Florence + The Machine - You’ve Got the Love
 Siriusmo - Nights Off
 Squarepusher - Do you know Squarepusher
@@ -124,8 +129,13 @@ Dam Swindle - Unfinished Business
 100 gecs - Money Machine
 100 gecs - hand crushed by a mallet
 Confidence Man - Damaged Goods
+Puscifer - The Underwhelming
+Holy Fuck - Gold Flakes
+1 9 0 5 & Former City Records - Gimme'
+Balduvian Bears - Hill (past dream)
 Geese - Cowboy Nudes
 Nothing But Thieves - Time :: Fate :: Karma :: God
+The Breeders - Cannonball
 Small Faces - Tin Soldier
 The Beatles - It Won't Be Long
 Lord Huron - Meet Me In The Woods
@@ -143,10 +153,26 @@ Flume - Quirk
 ANOTR & Abel Balder - Vertigo
 Charli xcx - party 4 u
 KAYTRANADA - Taste (Instrumental)
-What So Not & Ganz - Lone (feat. JOY.)
 KAYTRANADA - 2 the Music (Instrumental)
 Keys N Krates - Take It Off (Reprise)
 Flume - Numb & Getting Colder
+Thrice - Deadbolt
+Comeback Kid - Wake The Dead
+The Suicide Machines - Break the Glass
+Agent Orange - Bloodstains (1979 Original Version)
+DRAIN - Good Good Things
+Black Flag - Rise Above
+Minor Threat - Minor Threat
+Rancid - Time Bomb
+The Suicide Machines - Vans Song
+Turnstile - BLACKOUT
+Bullet for My Valentine - Waking the Demon
+Bullet for My Valentine - Take It Out On Me
+Killswitch Engage - My Curse
+Pantera - Domination
+(Hed) P.E. - Serpent Boy
+Plini - Salt + Charcoal
+Animals As Leaders - Gestaltzerfall
 Bob Marley & The Wailers - Could You Be Loved
 Jacob - Tenement Yard
 Gregory Isaacs - Night Nurse
@@ -157,6 +183,7 @@ Art Blakey & The Jazz Messengers - Come Rain or Come Shine
 Dennis Adu - Climb To The Nuwara Eliya
 Art Blakey - Backstage Sally
 Miles Davis - Footprints
+Chet Baker - Tangerine
 Chet Baker - hôtel 49
 Dean Martin - Volare (Nel Blu Di Pinto Di Blu)
 Miles Davis - Freddie Freeloader

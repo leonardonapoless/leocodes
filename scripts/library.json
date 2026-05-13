@@ -2683,5 +2683,33 @@
     "trackName": "Tangerine",
     "artistName": "Chet Baker",
     "trackViewUrl": "https://music.apple.com/us/album/tangerine/158550956?i=158551260&uo=4"
+  },
+  "crystal castles - knights": {
+    "artist": "Crystal Castles",
+    "title": "Knights",
+    "originalLine": "Crystal Castles - Knights",
+    "found": true,
+    "itunesId": 1132754197,
+    "previewUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/fa/1c/8c/fa1c8ccd-d43c-f623-92c8-3e4aa336d0e7/mzaf_4202653304935179568.plus.aac.p.m4a",
+    "artworkUrl100": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/0c/81/ee/0c81ee06-cab6-07ee-e925-a35c6027ad5a/2964.jpg/100x100bb.jpg",
+    "artworkUrl60": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/0c/81/ee/0c81ee06-cab6-07ee-e925-a35c6027ad5a/2964.jpg/60x60bb.jpg",
+    "collectionName": "Crystal Castles",
+    "trackName": "Knights",
+    "artistName": "Crystal Castles",
+    "trackViewUrl": "https://music.apple.com/us/album/knights/1132754123?i=1132754197&uo=4"
+  },
+  "crystal castles - wrath of god": {
+    "artist": "Crystal Castles",
+    "title": "Wrath of God",
+    "originalLine": "Crystal Castles - Wrath of God ",
+    "found": true,
+    "itunesId": 1667362880,
+    "previewUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview113/v4/a2/77/92/a27792b6-814a-5486-08a3-982d258527eb/mzaf_17631378192389233917.plus.aac.p.m4a",
+    "artworkUrl100": "https://is1-ssl.mzstatic.com/image/thumb/Music113/v4/af/c2/0c/afc20cde-17b5-2002-7a40-f28536312089/5400863128418_cover.jpg/100x100bb.jpg",
+    "artworkUrl60": "https://is1-ssl.mzstatic.com/image/thumb/Music113/v4/af/c2/0c/afc20cde-17b5-2002-7a40-f28536312089/5400863128418_cover.jpg/60x60bb.jpg",
+    "collectionName": "(III)",
+    "trackName": "Wrath of God",
+    "artistName": "Crystal Castles",
+    "trackViewUrl": "https://music.apple.com/us/album/wrath-of-god/1667362419?i=1667362880&uo=4"
   }
 }

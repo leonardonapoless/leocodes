@@ -102,14 +102,14 @@ const Projects = ({ onOpenVideo, onOpenBrowser, onOpenImage }: ProjectsProps) =>
             description: <>Simple Calculator App in <i><b>Java</b></i></>,
             githubLink: 'https://github.com/leonardonapoless/calc_u_later',
             demoLink: ''
-        },
-        {
-            id: 6, name: 'LeoCodes - Portfolio',
-            technologies: ['HTML', 'CSS', 'TypeScript', 'React', 'Vite'],
-            description: <>My personal Classic Mac OS style portfolio website built with <i><b>React</b></i> and <i><b>Vite</b></i>.</>,
-            githubLink: 'https://github.com/leonardonapoless/leocodes',
-            demoLink: 'https://leocodes.vercel.app'
         }
+    //     {
+    //         id: 6, name: 'LeoCodes - Portfolio',
+    //         technologies: ['HTML', 'CSS', 'TypeScript', 'React', 'Vite'],
+    //         description: <>My personal Classic Mac OS style portfolio website built with <i><b>React</b></i> and <i><b>Vite</b></i>.</>,
+    //         githubLink: 'https://github.com/leonardonapoless/leocodes',
+    //         demoLink: 'https://leocodes.vercel.app'
+    //     }
     ];
 
     const extractYouTubeVideoId = (url: string) => {

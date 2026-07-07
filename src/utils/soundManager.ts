@@ -18,9 +18,11 @@ import sbth from '../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/sbth.mp3';
 import sbth_attack from '../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/sbth attack.mp3';
 import sbth_decay from '../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/sbth decay.mp3';
 import sbtp from '../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/sbtp.mp3';
+import popp from '../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/popp.mp3';
+import ftrs from '../assets/audio/Mac-OS-9-Platinum-Sounds-main/mp3/ftrs.mp3';
 
 const soundFiles: Record<string, string> = {
-    wopn, wcls, wact, wcol, wexp, mnuo, mnuc, mnui, mnus, btnp, btnr, fsel, flap, fdrp, sbap, sbar, sbth, sbth_attack, sbth_decay, sbtp
+    wopn, wcls, wact, wcol, wexp, mnuo, mnuc, mnui, mnus, btnp, btnr, fsel, flap, fdrp, sbap, sbar, sbth, sbth_attack, sbth_decay, sbtp, popp, ftrs
 };
 
 const soundVolumes: Record<string, number> = {
@@ -44,12 +46,15 @@ const soundVolumes: Record<string, number> = {
     sbth_attack: 0.15,
     sbth_decay: 0.09,
     sbtp: 0.15,
+    popp: 0.3,
+    ftrs: 0.15,
 };
 
 let ctx: AudioContext | null = null;
 const soundBuffers: Record<string, AudioBuffer> = {};
 const rawBuffers: Record<string, ArrayBuffer> = {};
 const activeSources: Record<string, { source: AudioBufferSourceNode; gain: GainNode }> = {};
+let activeCount = 0;
 
 const getCtx = () => {
     if (!ctx) ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -58,8 +63,8 @@ const getCtx = () => {
 
 const ensureDecoded = async (ac: AudioContext, name: string) => {
     if (!soundBuffers[name] && rawBuffers[name]) {
-        soundBuffers[name] = await ac.decodeAudioData(rawBuffers[name]);
-        delete rawBuffers[name];
+        const bufferCopy = rawBuffers[name].slice(0);
+        soundBuffers[name] = await ac.decodeAudioData(bufferCopy);
     }
 };
 
@@ -92,11 +97,26 @@ export const playSound = async (name: string, { exclusive = false, loop = false,
 
     source.connect(gain);
     gain.connect(ac.destination);
+
+    let ended = false;
+    const handleEnded = () => {
+        if (ended) return;
+        ended = true;
+        activeCount--;
+        if (exclusive) {
+            delete activeSources[name];
+        }
+        if (activeCount <= 0) {
+            activeCount = 0;
+        }
+    };
+    source.onended = handleEnded;
+
     source.start(0);
+    activeCount++;
 
     if (exclusive) {
         activeSources[name] = { source, gain };
-        source.onended = () => { delete activeSources[name]; };
     }
 };
 
@@ -113,4 +133,20 @@ export const preloadSounds = async () => {
     );
 };
 
-export default { playSound, stopSound, preloadSounds };
+export const cleanup = async () => {
+    for (const name of Object.keys(activeSources)) {
+        stopSound(name);
+    }
+    if (ctx) {
+        try {
+            await ctx.close();
+        } catch (_) {}
+        ctx = null;
+    }
+    activeCount = 0;
+    for (const key in soundBuffers) {
+        delete soundBuffers[key];
+    }
+};
+
+export default { playSound, stopSound, preloadSounds, cleanup };

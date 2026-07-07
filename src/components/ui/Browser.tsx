@@ -8,7 +8,8 @@ interface BrowserProps {
 
 const Browser = ({ url }: BrowserProps) => {
     const iframeRef = useRef<HTMLIFrameElement>(null);
-    const [scale] = useState(0.75); // scale down to simulate higher resolution
+    // scale down to simulate higher resolution
+    const [scale] = useState(0.75);
     const [hasError, setHasError] = useState(false);
 
     useEffect(() => {
@@ -21,6 +22,7 @@ const Browser = ({ url }: BrowserProps) => {
                     iframeRef.current.contentWindow.location.href;
                 }
             } catch (e) {
+                setHasError(true);
             }
         }, 3000);
 

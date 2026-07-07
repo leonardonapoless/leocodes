@@ -215,10 +215,15 @@ const Window = ({ id, title, children, onClose, isOpen, style, isActive, onFocus
         return () => clearTimeout(timer);
     }, [title, isMobile, isOpen]);
 
+    const titleId = `window-title-${id || title.replace(/\s+/g, '-').toLowerCase()}`;
+
     return (
         <div
             id={id}
             className={`window ${isActive ? 'active' : ''} `}
+            role="dialog"
+            aria-labelledby={titleId}
+            aria-modal="false"
             style={{
                 position: 'absolute',
                 zIndex: isActive ? 10 : 1,
@@ -253,6 +258,7 @@ const Window = ({ id, title, children, onClose, isOpen, style, isActive, onFocus
                     }}
                 />
                 <h1
+                    id={titleId}
                     ref={titleRef}
                     className="title"
                     style={{

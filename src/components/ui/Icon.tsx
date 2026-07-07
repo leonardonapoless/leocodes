@@ -30,7 +30,6 @@ const Icon = ({ label, iconSrc, onDoubleClick, x, y, isSelected, onSelect, onDra
         const timeDiff = currentTime - lastClickTime.current;
 
         if (timeDiff < 300) {
-            if (!isWindowOpen) playSound('flap');
             onDoubleClick && onDoubleClick();
         } else {
             if (!isWindowOpen) playSound('fsel');
@@ -95,6 +94,17 @@ const Icon = ({ label, iconSrc, onDoubleClick, x, y, isSelected, onSelect, onDra
             }}
             onMouseDown={handleMouseDown}
             onDoubleClick={onDoubleClick}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onSelect({ stopPropagation: () => {} } as unknown as React.MouseEvent);
+                    if (onDoubleClick) {
+                        onDoubleClick();
+                    }
+                }
+            }}
         >
             <div style={{
                 width: `${size}px`,

@@ -32,6 +32,17 @@ export const globalStyles = `
         background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1));
         background-size: 100% 4px;
     }
+    @keyframes food-pulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(0.9); opacity: 0.9; }
+    }
+    .food-animated {
+        animation: food-pulse 1.2s infinite ease-in-out;
+    }
+    .action-btn:active {
+        transform: scale(0.95);
+        box-shadow: inset 3px 3px 6px rgba(0,0,0,0.8), inset -1px -1px 2px rgba(255,255,255,0.2) !important;
+    }
 `;
 
 export const bezelStyle: CSSProperties = {
@@ -59,7 +70,8 @@ export const getScreenStyle = (screenSize: number): CSSProperties => ({
     backgroundColor: PALETTE.bg,
     boxShadow: PALETTE.screenShadow,
     border: '2px solid #5d6d33',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    cursor: 'none'
 });
 
 export const scanlinesOverlayStyle: CSSProperties = {

@@ -99,6 +99,7 @@ const Projects = ({ onOpenVideo, onOpenBrowser, onOpenImage }: ProjectsProps) =>
                                                         alt={tech}
                                                         title={tech}
                                                         className="tech-icon"
+                                                        loading="lazy"
                                                         style={{
                                                             width: 'auto',
                                                             height: '25px',
@@ -128,12 +129,21 @@ const Projects = ({ onOpenVideo, onOpenBrowser, onOpenImage }: ProjectsProps) =>
                                 <li style={{ marginTop: '10px' }}>
                                     <div
                                         onClick={() => onOpenImage && onOpenImage(project.demoImage!, project.name)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' || e.key === ' ') {
+                                                e.preventDefault();
+                                                onOpenImage && onOpenImage(project.demoImage!, project.name);
+                                            }
+                                        }}
                                         style={{ cursor: 'pointer', display: 'inline-block' }}
                                         title="Click to enlarge"
+                                        role="button"
+                                        tabIndex={0}
                                     >
                                         <img
                                             src={project.demoImage}
                                             alt={`${project.name} Demo`}
+                                            loading="lazy"
                                             style={{ maxWidth: '100%', height: 'auto', borderRadius: '4px', border: '1px solid #ccc' }}
                                         />
                                     </div>

@@ -59,7 +59,7 @@ export default function MusicPlayerUI({
                         <div className="album-art-container">
                             <img
                                 src={currentSong.artworkUrl100}
-                                alt="Album Art"
+                                alt={`Album art for ${currentSong.title} by ${currentSong.artist}`}
                                 className="album-art"
                             />
                         </div>
@@ -94,6 +94,7 @@ export default function MusicPlayerUI({
                             value={currentTime}
                             onChange={onSeek}
                             className="retro-range-input"
+                            aria-label="Progress"
                         />
                     </div>
 
@@ -156,6 +157,7 @@ export default function MusicPlayerUI({
                                 value={volume}
                                 onChange={onVolumeChange}
                                 className="retro-range-input volume-slider"
+                                aria-label="Volume"
                             />
                         </div>
                     </div>
@@ -174,7 +176,15 @@ export default function MusicPlayerUI({
                                     <tr
                                         key={index}
                                         onClick={() => onSongSelect(index)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' || e.key === ' ') {
+                                                e.preventDefault();
+                                                onSongSelect(index);
+                                            }
+                                        }}
                                         className={`playlist-row ${rowClass}`}
+                                        role="button"
+                                        tabIndex={0}
                                     >
                                         <td className="playlist-cell-index">{index + 1}.</td>
                                         <td className="playlist-cell-title">{song.title}</td>

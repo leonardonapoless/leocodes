@@ -20,7 +20,9 @@ function shuffleArray<T>(array: T[]): T[] {
 }
 
 export default function MusicPlayer({ onPlaylistToggle, isPlaylistOpen = false, shouldAutoPlay = false, shouldPause = false, onPlay }: MusicPlayerProps) {
-    const audioRef = useRef<HTMLAudioElement>(null);
+    const audioA = useRef<HTMLAudioElement>(null);
+    const audioB = useRef<HTMLAudioElement>(null);
+    const activeRef = useRef<'A' | 'B'>('A');
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentSongIndex, setCurrentSongIndex] = useState(0);
     const [currentTime, setCurrentTime] = useState(0);
@@ -31,6 +33,40 @@ export default function MusicPlayer({ onPlaylistToggle, isPlaylistOpen = false, 
 
     const playlist: Song[] = playlistData as Song[];
     const currentSong = playlist[currentSongIndex];
+
+    const getActive = () => activeRef.current === 'A' ? audioA.current : audioB.current;
+    const getNext = () => activeRef.current === 'A' ? audioB.current : audioA.current;
+
+    const getNextIndex = (from: number) => {
+        if (isShuffle && shuffledIndices.length > 0) {
+            const pos = shuffledIndices.indexOf(from);
+            return shuffledIndices[(pos + 1) % shuffledIndices.length];
+        }
+        return (from + 1) % playlist.length;
+    };
+
+    const getPrevIndex = (from: number) => {
+        if (isShuffle && shuffledIndices.length > 0) {
+            const pos = shuffledIndices.indexOf(from);
+            return shuffledIndices[(pos - 1 + shuffledIndices.length) % shuffledIndices.length];
+        }
+        return (from - 1 + playlist.length) % playlist.length;
+    };
+
+    // load song into the audio element
+    const loadInto = (el: HTMLAudioElement | null, index: number) => {
+        if (!el) return;
+        const url = playlist[index]?.previewUrl;
+        if (url) {
+            el.src = url;
+            el.load();
+        }
+    };
+
+    // preload next track into the inactive element
+    const preloadNext = (fromIndex: number) => {
+        loadInto(getNext(), getNextIndex(fromIndex));
+    };
 
     useEffect(() => {
         if (isShuffle) {
@@ -48,25 +84,28 @@ export default function MusicPlayer({ onPlaylistToggle, isPlaylistOpen = false, 
 
     // sync volume
     useEffect(() => {
-        if (audioRef.current) {
-            audioRef.current.volume = volume;
-        }
+        if (audioA.current) audioA.current.volume = volume;
+        if (audioB.current) audioB.current.volume = volume;
     }, [volume]);
 
-    // sync react state to audio element
+    // load initial song and preload next
     useEffect(() => {
-        if (audioRef.current) {
-            if (isPlaying) {
-                const playPromise = audioRef.current.play();
-                if (playPromise !== undefined) {
-                    playPromise.catch(error => {
-                        console.error("Playback failed:", error);
-                        setIsPlaying(false);
-                    });
-                }
-            } else {
-                audioRef.current.pause();
-            }
+        const active = getActive();
+        if (active && !active.src) {
+            loadInto(active, 0);
+        }
+        preloadNext(currentSongIndex);
+    }, []);
+
+    // sync play/pause to active element
+    useEffect(() => {
+        const active = getActive();
+        if (!active) return;
+        if (isPlaying) {
+            const p = active.play();
+            if (p) p.catch(() => setIsPlaying(false));
+        } else {
+            active.pause();
         }
     }, [isPlaying, currentSongIndex]);
 
@@ -77,6 +116,22 @@ export default function MusicPlayer({ onPlaylistToggle, isPlaylistOpen = false, 
         }
     }, [shouldAutoPlay]);
 
+    // when song ends, swap to the preloaded element
+    const handleEnded = () => {
+        const next = getNext();
+        if (next) {
+            next.volume = volume;
+            next.play().catch(() => {});
+        }
+        // flip active
+        activeRef.current = activeRef.current === 'A' ? 'B' : 'A';
+        const nextIndex = getNextIndex(currentSongIndex);
+        setCurrentSongIndex(nextIndex);
+        setIsPlaying(true);
+        // preload the one after that into the now-inactive element
+        preloadNext(nextIndex);
+    };
+
     // controls
     const togglePlay = () => {
         if (!isPlaying && onPlay) {
@@ -86,31 +141,37 @@ export default function MusicPlayer({ onPlaylistToggle, isPlaylistOpen = false, 
     };
 
     const playSong = (index: number) => {
+        const active = getActive();
+        loadInto(active, index);
+        if (active) {
+            active.oncanplay = () => {
+                active.oncanplay = null;
+                active.play().catch(() => {});
+            };
+        }
         setCurrentSongIndex(index);
         setIsPlaying(true);
+        preloadNext(index);
         if (onPlay) onPlay();
     };
 
     const nextSong = () => {
-        if (isShuffle && shuffledIndices.length > 0) {
-            const currentShufflePos = shuffledIndices.indexOf(currentSongIndex);
-            const nextShufflePos = (currentShufflePos + 1) % shuffledIndices.length;
-            setCurrentSongIndex(shuffledIndices[nextShufflePos]);
-        } else {
-            setCurrentSongIndex((prev) => (prev + 1) % playlist.length);
-        }
-        setIsPlaying(true);
+        handleEnded();
     };
 
     const prevSong = () => {
-        if (isShuffle && shuffledIndices.length > 0) {
-            const currentShufflePos = shuffledIndices.indexOf(currentSongIndex);
-            const prevShufflePos = (currentShufflePos - 1 + shuffledIndices.length) % shuffledIndices.length;
-            setCurrentSongIndex(shuffledIndices[prevShufflePos]);
-        } else {
-            setCurrentSongIndex((prev) => (prev - 1 + playlist.length) % playlist.length);
+        const prevIdx = getPrevIndex(currentSongIndex);
+        const active = getActive();
+        loadInto(active, prevIdx);
+        if (active) {
+            active.oncanplay = () => {
+                active.oncanplay = null;
+                active.play().catch(() => {});
+            };
         }
+        setCurrentSongIndex(prevIdx);
         setIsPlaying(true);
+        preloadNext(prevIdx);
     };
 
     const toggleShuffle = () => {
@@ -118,16 +179,18 @@ export default function MusicPlayer({ onPlaylistToggle, isPlaylistOpen = false, 
     };
 
     const handleTimeUpdate = () => {
-        if (audioRef.current) {
-            setCurrentTime(audioRef.current.currentTime);
-            setDuration(audioRef.current.duration || 0);
+        const active = getActive();
+        if (active) {
+            setCurrentTime(active.currentTime);
+            setDuration(active.duration || 0);
         }
     };
 
     const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
         const time = parseFloat(e.target.value);
-        if (audioRef.current) {
-            audioRef.current.currentTime = time;
+        const active = getActive();
+        if (active) {
+            active.currentTime = time;
             setCurrentTime(time);
         }
     };
@@ -148,13 +211,8 @@ export default function MusicPlayer({ onPlaylistToggle, isPlaylistOpen = false, 
 
     return (
         <>
-            {/* hidden audio element driven by state */}
-            <audio
-                ref={audioRef}
-                src={currentSong?.previewUrl}
-                onTimeUpdate={handleTimeUpdate}
-                onEnded={nextSong}
-            />
+            <audio ref={audioA} onTimeUpdate={handleTimeUpdate} onEnded={handleEnded} preload="auto" />
+            <audio ref={audioB} onTimeUpdate={handleTimeUpdate} onEnded={handleEnded} preload="auto" />
 
             <MusicPlayerUI
                 currentSong={currentSong}

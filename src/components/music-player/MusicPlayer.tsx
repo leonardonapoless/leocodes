@@ -100,10 +100,21 @@ export default function MusicPlayer({ onPlaylistToggle, isPlaylistOpen = false, 
     // sync play/pause to active element
     useEffect(() => {
         const active = getActive();
+        const inactive = getNext();
+        
+        // Ensure inactive is never playing
+        if (inactive) {
+            inactive.oncanplay = null;
+            inactive.pause();
+        }
+
         if (!active) return;
         if (isPlaying) {
             const p = active.play();
-            if (p) p.catch(() => setIsPlaying(false));
+            if (p) p.catch((e) => {
+                console.error("Playback failed:", e);
+                setIsPlaying(false);
+            });
         } else {
             active.pause();
         }
@@ -118,6 +129,13 @@ export default function MusicPlayer({ onPlaylistToggle, isPlaylistOpen = false, 
 
     // when song ends, swap to the preloaded element
     const handleEnded = () => {
+        const active = getActive();
+        if (active) {
+            active.oncanplay = null;
+            active.pause();
+            active.currentTime = 0;
+        }
+
         const next = getNext();
         if (next) {
             next.volume = volume;
@@ -142,13 +160,8 @@ export default function MusicPlayer({ onPlaylistToggle, isPlaylistOpen = false, 
 
     const playSong = (index: number) => {
         const active = getActive();
+        if (active) active.oncanplay = null;
         loadInto(active, index);
-        if (active) {
-            active.oncanplay = () => {
-                active.oncanplay = null;
-                active.play().catch(() => {});
-            };
-        }
         setCurrentSongIndex(index);
         setIsPlaying(true);
         preloadNext(index);
@@ -162,13 +175,8 @@ export default function MusicPlayer({ onPlaylistToggle, isPlaylistOpen = false, 
     const prevSong = () => {
         const prevIdx = getPrevIndex(currentSongIndex);
         const active = getActive();
+        if (active) active.oncanplay = null;
         loadInto(active, prevIdx);
-        if (active) {
-            active.oncanplay = () => {
-                active.oncanplay = null;
-                active.play().catch(() => {});
-            };
-        }
         setCurrentSongIndex(prevIdx);
         setIsPlaying(true);
         preloadNext(prevIdx);

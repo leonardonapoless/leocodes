@@ -14,19 +14,7 @@ import metalIcon from '../assets/metalIcon.png';
 import openglIcon from '../assets/openglIcon.png';
 import typescriptIcon from '../assets/typescriptIcon.png';
 import sqliteIcon from '../assets/sqliteicon.png';
-import trebleMakerImage from '../assets/treblemaker_demo.png';
-
-interface Project {
-    id: number;
-    name: string;
-    technologies: string[];
-    description: string | React.ReactNode;
-    githubLink: string;
-    demoLink: string;
-    videoSize?: { width: number; height: number };
-    videoPosition?: { x: number; y: number };
-    demoImage?: string;
-}
+import { projectCategories, type Project } from './projectsData';
 
 interface ProjectsProps {
     onOpenVideo?: (videoId: string, title: string, width?: number, height?: number, x?: number, y?: number) => void;
@@ -35,83 +23,6 @@ interface ProjectsProps {
 }
 
 const Projects = ({ onOpenVideo, onOpenBrowser, onOpenImage }: ProjectsProps) => {
-    const iosProjects: Project[] = [
-        {
-            id: 1, name: 'PAMS (Platform Agnostic Music Search)',
-            technologies: ['Swift', 'SwiftUI'],
-            description: 'A fast, no-frills way to search a song and open it on Apple Music, Spotify, TIDAL, or YouTube. Flip the artwork to see the nerdy bits, then get back to the music.',
-            githubLink: 'https://github.com/leonardonapoless/PAMS',
-            demoLink: 'https://youtu.be/d1w29lK44IM',
-            videoSize: { width: 1020, height: 700 },
-            videoPosition: { x: 100, y: 50 }
-        },
-        {
-            id: 2, name: 'TicTak',
-            technologies: ['Swift', 'SwiftUI'],
-            description: <>A simple tictactoe iOS app made in <i><b>Swift</b></i> and <i><b>SwiftUI</b></i> using the <i><b>MVVM</b></i> architecture.</>,
-            githubLink: 'https://github.com/leonardonapoless/tictak',
-            demoLink: 'https://youtube.com/shorts/sFOXO_k8Tg8?si=RTLpRh8eiyk4DQ09',
-            videoSize: { width: 550, height: 700 },
-            videoPosition: { x: 500, y: 50 }
-        },
-    ];
-
-    const macosProjects: Project[] = [
-        {
-            id: 7, name: 'AutomataStudio',
-            technologies: ['Swift', 'SwiftUI'],
-            description: <>A native macOS app for designing and simulating finite automata, built with <i><b>SwiftUI</b></i>.</>,
-            githubLink: 'https://github.com/leonardonapoless/AutomataStudio',
-            demoLink: '',
-        },
-        {
-            id: 8, name: 'Blobber',
-            technologies: ['Swift', 'Metal'],
-            description: <>A simple <i><b>Metal</b></i> blob shader made for my Computer Graphics studies. It uses metaballs for a liquid effect, push it with the cursor or hit Space to interact with it and change its shape.</>,
-            githubLink: 'https://github.com/leonardonapoless/Blobber',
-            demoLink: '',
-        }
-    ];
-
-    const otherProjects: Project[] = [
-        {
-            id: 3, name: 'TrebleMaker',
-            technologies: ['C++', 'JUCE'],
-            description: <>A simple high-shelf filter plugin built with <i><b>JUCE</b></i> and <i><b>C++</b></i>.</>,
-            githubLink: 'https://github.com/leonardonapoless/treblemaker',
-            demoLink: '',
-            demoImage: trebleMakerImage
-        },
-        {
-            id: 9, name: 'Relikd',
-            technologies: ['JavaFX', 'SQLite'],
-            description: <>A vintage computer catalog application built with <i><b>JavaFX</b></i> and <i><b>SQLite</b></i> to browse classic hardware, featuring search and async image caching.</>,
-            githubLink: 'https://github.com/leonardonapoless/Relikd',
-            demoLink: ''
-        },
-        {
-            id: 4, name: 'Sacolão Rodrigues',
-            technologies: ['HTML', 'CSS', 'JavaScript'],
-            description: 'Sacolão Rodrigues (Trabalho Final de Introdução ao Desenvolvimento Web, 1º Período)',
-            githubLink: 'https://github.com/leonardonapoless/SacolaoRodrigues',
-            demoLink: 'https://sacolaorodrigues.kinsta.page/'
-        },
-        {
-            id: 5, name: 'Calc U Later',
-            technologies: ['Java'],
-            description: <>Simple Calculator App in <i><b>Java</b></i></>,
-            githubLink: 'https://github.com/leonardonapoless/calc_u_later',
-            demoLink: ''
-        }
-    //     {
-    //         id: 6, name: 'LeoCodes - Portfolio',
-    //         technologies: ['HTML', 'CSS', 'TypeScript', 'React', 'Vite'],
-    //         description: <>My personal Classic Mac OS style portfolio website built with <i><b>React</b></i> and <i><b>Vite</b></i>.</>,
-    //         githubLink: 'https://github.com/leonardonapoless/leocodes',
-    //         demoLink: 'https://leocodes.vercel.app'
-    //     }
-    ];
-
     const extractYouTubeVideoId = (url: string) => {
         const patterns = [
             { match: 'youtube.com/shorts/', extract: (u: string) => u.split('shorts/')[1].split('?')[0] },
@@ -169,7 +80,7 @@ const Projects = ({ onOpenVideo, onOpenBrowser, onOpenImage }: ProjectsProps) =>
     const renderProjectList = (projects: Project[], openByDefault = true) => (
         <ul className="tree-view">
             {projects.map(project => (
-                <li key={project.id}>
+                <li key={project.name}>
                     <details open={openByDefault}>
                         <summary>
                             <b>
@@ -238,24 +149,15 @@ const Projects = ({ onOpenVideo, onOpenBrowser, onOpenImage }: ProjectsProps) =>
 
     return (
         <div>
-            <fieldset>
-                <legend>iOS Projects</legend>
-                {renderProjectList(iosProjects)}
-            </fieldset>
-
-            <br />
-
-            <fieldset>
-                <legend>macOS Projects</legend>
-                {renderProjectList(macosProjects)}
-            </fieldset>
-
-            <br />
-
-            <fieldset>
-                <legend>Other Projects</legend>
-                {renderProjectList(otherProjects, false)}
-            </fieldset>
+            {projectCategories.map((category) => (
+                <React.Fragment key={category.label}>
+                    <fieldset>
+                        <legend>{category.label}</legend>
+                        {renderProjectList(category.projects, category.openByDefault)}
+                    </fieldset>
+                    <br />
+                </React.Fragment>
+            ))}
         </div>
     );
 };

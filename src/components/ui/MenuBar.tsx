@@ -80,9 +80,9 @@ const MenuBar = ({ onOpenWindow, onCrash }: MenuBarProps) => {
         fontFamily: 'Chicago, sans-serif'
       }}
     >
-      <div style={{ display: 'flex', height: '100%' }}>
+      <div style={{ display: 'flex', height: '100%' }} role="menubar">
         {Object.entries(menus).map(([key, menu]) => (
-          <div key={key} style={{ position: 'relative', height: '100%', fontSize: '18px', fontWeight: 'bold' }}>
+          <div key={key} style={{ position: 'relative', height: '100%', fontSize: '18px', fontWeight: 'bold' }} role="none">
             <div
               onMouseDown={() => {
                 const wasOpen = activeMenu === key;
@@ -97,6 +97,16 @@ const MenuBar = ({ onOpenWindow, onCrash }: MenuBarProps) => {
                   setActiveMenu(key);
                 }
               }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  const wasOpen = activeMenu === key;
+                  const newMenu = wasOpen ? null : key;
+                  if (!wasOpen) playSound('mnuo');
+                  else playSound('mnuc');
+                  setActiveMenu(newMenu);
+                }
+              }}
               style={{
                 padding: '0 10px',
                 height: '100%',
@@ -106,6 +116,10 @@ const MenuBar = ({ onOpenWindow, onCrash }: MenuBarProps) => {
                 background: activeMenu === key ? '#000' : 'transparent',
                 color: activeMenu === key ? '#fff' : '#000'
               }}
+              role="menuitem"
+              aria-haspopup="true"
+              aria-expanded={activeMenu === key}
+              tabIndex={0}
             >
               <span style={{ lineHeight: '1', display: 'flex', alignItems: 'center' }}>
                 {menu.label}
@@ -113,31 +127,46 @@ const MenuBar = ({ onOpenWindow, onCrash }: MenuBarProps) => {
             </div>
 
             {activeMenu === key && (
-              <div style={{
-                position: 'absolute',
-                top: '32px',
-                left: 0,
-                background: '#fff',
-                border: '1px solid #000',
-                boxShadow: '2px 2px 0px #000',
-                minWidth: '200px',
-                zIndex: 10000,
-                display: 'flex',
-                flexDirection: 'column',
-                padding: '0'
-              }}>
+              <div
+                role="menu"
+                style={{
+                  position: 'absolute',
+                  top: '32px',
+                  left: 0,
+                  background: '#fff',
+                  border: '1px solid #000',
+                  boxShadow: '2px 2px 0px #000',
+                  minWidth: '200px',
+                  zIndex: 10000,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  padding: '0'
+                }}
+              >
                 {menu.items.map((item: any, index: number) => {
                   if (item.type === 'separator') {
-                    return <div key={index} style={{ borderTop: '1px dotted #000', margin: '4px 0' }} />;
+                    return <div key={index} style={{ borderTop: '1px dotted #000', margin: '4px 0' }} role="separator" />;
                   }
                   return (
                     <div
                       key={index}
+                      role="menuitem"
+                      tabIndex={item.disabled ? -1 : 0}
                       onClick={() => {
                         if (!item.disabled) {
                           playSound('mnus');
                           item.action && item.action();
                           setActiveMenu(null);
+                        }
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          if (!item.disabled) {
+                            playSound('mnus');
+                            item.action && item.action();
+                            setActiveMenu(null);
+                          }
                         }
                       }}
                       style={{
@@ -156,6 +185,19 @@ const MenuBar = ({ onOpenWindow, onCrash }: MenuBarProps) => {
                         }
                       }}
                       onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => {
+                        if (!item.disabled) {
+                          e.currentTarget.style.background = '#fff';
+                          e.currentTarget.style.color = '#000';
+                        }
+                      }}
+                      onFocus={(e: React.FocusEvent<HTMLDivElement>) => {
+                        if (!item.disabled) {
+                          playSound('mnui');
+                          e.currentTarget.style.background = '#000';
+                          e.currentTarget.style.color = '#fff';
+                        }
+                      }}
+                      onBlur={(e: React.FocusEvent<HTMLDivElement>) => {
                         if (!item.disabled) {
                           e.currentTarget.style.background = '#fff';
                           e.currentTarget.style.color = '#000';

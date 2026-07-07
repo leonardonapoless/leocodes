@@ -58,21 +58,23 @@ const BootSplash = ({ onComplete }: BootSplashProps) => {
             }}>
             {showContent && (
                 <>
-                    <div style={{
-                        position: 'absolute',
-                        top: '45%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        width: '80vw',
-                        height: '80vw',
-                        maxWidth: '600px',
-                        maxHeight: '600px',
-                        backgroundImage: `url(${logo})`,
-                        backgroundSize: 'contain',
-                        backgroundRepeat: 'no-repeat',
-                        backgroundPosition: 'center',
-                        filter: 'invert(1)'
-                    }} />
+                    <img
+                        src={logo}
+                        alt="Logo"
+                        fetchPriority="high"
+                        style={{
+                            position: 'absolute',
+                            top: '45%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            width: '80vw',
+                            height: '80vw',
+                            maxWidth: '600px',
+                            maxHeight: '600px',
+                            objectFit: 'contain',
+                            filter: 'invert(1)'
+                        }}
+                    />
                     {!hasStarted && (
                         <button
                             className="btn boot-me-up-btn"

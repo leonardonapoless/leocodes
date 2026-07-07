@@ -14,6 +14,10 @@ export function Snake() {
     const [food, setFood] = useState({ x: 5, y: 5 });
     const [gameOver, setGameOver] = useState(false);
     const [score, setScore] = useState(0);
+    const [highScore, setHighScore] = useState(() => {
+        const saved = localStorage.getItem('snakeHighScore');
+        return saved ? parseInt(saved, 10) : 0;
+    });
 
     const dirRef = useRef(INITIAL_DIR);
     const lastDirRef = useRef(INITIAL_DIR);
@@ -22,9 +26,21 @@ export function Snake() {
 
     const [gameStarted, setGameStarted] = useState(false);
     const [isDesktop, setIsDesktop] = useState(window.innerWidth > 768);
+    const isMountedRef = useRef(true);
 
     useEffect(() => {
-        const handleResize = () => setIsDesktop(window.innerWidth > 768);
+        isMountedRef.current = true;
+        return () => {
+            isMountedRef.current = false;
+        };
+    }, []);
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (isMountedRef.current) {
+                setIsDesktop(window.innerWidth > 768);
+            }
+        };
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
@@ -32,26 +48,28 @@ export function Snake() {
     const screenSize = isDesktop ? 340 : Math.min(260, window.innerWidth - 80);
 
     const spawnFood = useCallback(() => {
-        setFood({
-            x: Math.floor(Math.random() * GRID_SIZE),
-            y: Math.floor(Math.random() * GRID_SIZE)
-        });
+        if (isMountedRef.current) {
+            setFood({
+                x: Math.floor(Math.random() * GRID_SIZE),
+                y: Math.floor(Math.random() * GRID_SIZE)
+            });
+        }
     }, []);
 
     const resetGame = useCallback(() => {
-        setSnake(INITIAL_SNAKE);
-        dirRef.current = INITIAL_DIR;
-        lastDirRef.current = INITIAL_DIR;
-        setScore(0);
-        setGameOver(false);
-        setGameStarted(true);
-        spawnFood();
+        if (isMountedRef.current) {
+            setSnake(INITIAL_SNAKE);
+            dirRef.current = INITIAL_DIR;
+            lastDirRef.current = INITIAL_DIR;
+            setScore(0);
+            setGameOver(false);
+            setGameStarted(true);
+            spawnFood();
+        }
     }, [spawnFood]);
 
-
-
     const tick = useCallback(() => {
-        if (gameOver || !gameStarted) return;
+        if (!isMountedRef.current || gameOver || !gameStarted) return;
 
         setSnake(prev => {
             const currentDir = dirRef.current;
@@ -66,15 +84,31 @@ export function Snake() {
             const isSelfCollision = prev.some(s => s.x === head.x && s.y === head.y);
 
             if (isOutOfBounds || isSelfCollision) {
-                setGameOver(true);
+                if (isMountedRef.current) {
+                    playSound('fdrp');
+                    setGameOver(true);
+                }
                 return prev;
             }
 
             const newSnake = [head, ...prev];
 
             if (head.x === food.x && head.y === food.y) {
-                setScore(s => s + 1);
-                spawnFood();
+                if (isMountedRef.current) {
+                    playSound('popp');
+                    setScore(s => {
+                        const newScore = s + 1;
+                        setHighScore(prevHigh => {
+                            if (newScore > prevHigh) {
+                                localStorage.setItem('snakeHighScore', newScore.toString());
+                                return newScore;
+                            }
+                            return prevHigh;
+                        });
+                        return newScore;
+                    });
+                    spawnFood();
+                }
             } else {
                 newSnake.pop();
             }
@@ -85,10 +119,11 @@ export function Snake() {
 
     useEffect(() => {
         if (gameStarted && !gameOver) {
-            ticker.current = setInterval(tick, SPEED);
+            const currentSpeed = Math.max(75, 150 - score * 1.5);
+            ticker.current = setInterval(tick, currentSpeed);
         }
         return () => { if (ticker.current) clearInterval(ticker.current) };
-    }, [gameStarted, gameOver, tick]);
+    }, [gameStarted, gameOver, tick, score]);
 
     const setDir = useCallback((x: number, y: number) => {
         if (!gameStarted) return;
@@ -100,6 +135,7 @@ export function Snake() {
 
     useEffect(() => {
         const handleKey = (e: KeyboardEvent) => {
+            if (!isMountedRef.current) return;
             const key = e.key.toLowerCase();
 
             if (key === 'enter') {
@@ -169,6 +205,7 @@ export function Snake() {
                         {gameOver && (
                             <div style={S.overlayStyle}>
                                 <h2 className="retro-text" style={S.gameOverTitleStyle}>GAME OVER</h2>
+                                <div className="retro-text" style={{ fontSize: '12px', marginTop: '10px' }}>Score: {score}</div>
                                 <div style={{ height: 20 }} />
                                 <button onMouseDown={() => playSound('btnp')} onMouseUp={() => playSound('btnr')} onClick={resetGame} className="retro-text" style={S.restartButtonStyle}>RESTART</button>
                                 <span style={S.restartHintStyle}>Press Enter</span>
@@ -179,10 +216,11 @@ export function Snake() {
                             <div key={`${s.x}-${s.y}-${i}`} style={S.getSnakePartStyle(s.x, s.y, i === 0, GRID_SIZE)} />
                         ))}
 
-                        <div style={S.getFoodContainerStyle(food.x, food.y, GRID_SIZE)}>
+                        <div className="food-animated" style={S.getFoodContainerStyle(food.x, food.y, GRID_SIZE)}>
                             <img src={appleLogo} alt="Food" style={S.foodImageStyle} />
                         </div>
 
+                        <div className="retro-text" style={{...S.scoreStyle, bottom: '20px'}}>HI: {highScore}</div>
                         <div className="retro-text" style={S.scoreStyle}>{score}</div>
                     </div>
                 </div>
@@ -192,21 +230,97 @@ export function Snake() {
                         <div style={S.dpadHorizontalBgStyle}></div>
                         <div style={S.dpadVerticalBgStyle}></div>
 
-                        <div onPointerDown={(e) => { e.stopPropagation(); setDir(0, -1); }} style={S.dpadUpHitboxStyle}></div>
-                        <div onPointerDown={(e) => { e.stopPropagation(); setDir(0, 1); }} style={S.dpadDownHitboxStyle}></div>
-                        <div onPointerDown={(e) => { e.stopPropagation(); setDir(-1, 0); }} style={S.dpadLeftHitboxStyle}></div>
-                        <div onPointerDown={(e) => { e.stopPropagation(); setDir(1, 0); }} style={S.dpadRightHitboxStyle}></div>
+                        <div
+                            onPointerDown={(e) => { e.stopPropagation(); setDir(0, -1); }}
+                            style={S.dpadUpHitboxStyle}
+                            role="button"
+                            tabIndex={0}
+                            aria-label="Up"
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    setDir(0, -1);
+                                }
+                            }}
+                        ></div>
+                        <div
+                            onPointerDown={(e) => { e.stopPropagation(); setDir(0, 1); }}
+                            style={S.dpadDownHitboxStyle}
+                            role="button"
+                            tabIndex={0}
+                            aria-label="Down"
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    setDir(0, 1);
+                                }
+                            }}
+                        ></div>
+                        <div
+                            onPointerDown={(e) => { e.stopPropagation(); setDir(-1, 0); }}
+                            style={S.dpadLeftHitboxStyle}
+                            role="button"
+                            tabIndex={0}
+                            aria-label="Left"
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    setDir(-1, 0);
+                                }
+                            }}
+                        ></div>
+                        <div
+                            onPointerDown={(e) => { e.stopPropagation(); setDir(1, 0); }}
+                            style={S.dpadRightHitboxStyle}
+                            role="button"
+                            tabIndex={0}
+                            aria-label="Right"
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    setDir(1, 0);
+                                }
+                            }}
+                        ></div>
 
                         <div style={S.dpadCenterStyle}></div>
                     </div>
 
                     <div style={S.actionButtonsContainerStyle}>
                         <div style={S.actionButtonWrapperStyle}>
-                            <div onClick={resetGame} onPointerDown={(e) => e.stopPropagation()} style={S.actionButtonStyle}></div>
+                            <div
+                                className="action-btn"
+                                onClick={resetGame}
+                                onPointerDown={(e) => e.stopPropagation()}
+                                style={S.actionButtonStyle}
+                                role="button"
+                                tabIndex={0}
+                                aria-label="Button B"
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        resetGame();
+                                    }
+                                }}
+                            ></div>
                             <span style={S.actionButtonLabelStyle}>B</span>
                         </div>
                         <div style={S.actionButtonAWrapperStyle}>
-                            <div onClick={resetGame} onPointerDown={(e) => e.stopPropagation()} style={S.actionButtonStyle}></div>
+                            <div
+                                className="action-btn"
+                                onClick={resetGame}
+                                onPointerDown={(e) => e.stopPropagation()}
+                                style={S.actionButtonStyle}
+                                role="button"
+                                tabIndex={0}
+                                aria-label="Button A"
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        resetGame();
+                                    }
+                                }}
+                            ></div>
                             <span style={S.actionButtonLabelStyle}>A</span>
                         </div>
                     </div>

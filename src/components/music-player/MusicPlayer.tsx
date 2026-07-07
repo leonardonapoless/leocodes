@@ -30,6 +30,7 @@ export default function MusicPlayer({ onPlaylistToggle, isPlaylistOpen = false, 
     const [volume, setVolume] = useState(0.25);
     const [isShuffle, setIsShuffle] = useState(false);
     const [shuffledIndices, setShuffledIndices] = useState<number[]>([]);
+    const isMounted = useRef(true);
 
     const playlist: Song[] = playlistData as Song[];
     const currentSong = playlist[currentSongIndex];
@@ -69,7 +70,14 @@ export default function MusicPlayer({ onPlaylistToggle, isPlaylistOpen = false, 
     };
 
     useEffect(() => {
-        if (isShuffle) {
+        isMounted.current = true;
+        return () => {
+            isMounted.current = false;
+        };
+    }, []);
+
+    useEffect(() => {
+        if (isShuffle && isMounted.current) {
             const indices = Array.from({ length: playlist.length }, (_, i) => i);
             setShuffledIndices(shuffleArray(indices));
         }
@@ -77,7 +85,7 @@ export default function MusicPlayer({ onPlaylistToggle, isPlaylistOpen = false, 
 
     // handle external pause
     useEffect(() => {
-        if (shouldPause && isPlaying) {
+        if (shouldPause && isPlaying && isMounted.current) {
             setIsPlaying(false);
         }
     }, [shouldPause, isPlaying]);
@@ -113,7 +121,9 @@ export default function MusicPlayer({ onPlaylistToggle, isPlaylistOpen = false, 
             const p = active.play();
             if (p) p.catch((e) => {
                 console.error("Playback failed:", e);
-                setIsPlaying(false);
+                if (isMounted.current) {
+                    setIsPlaying(false);
+                }
             });
         } else {
             active.pause();
@@ -122,7 +132,7 @@ export default function MusicPlayer({ onPlaylistToggle, isPlaylistOpen = false, 
 
     // autoplay
     useEffect(() => {
-        if (shouldAutoPlay && !isPlaying && currentSongIndex === 0 && currentTime === 0) {
+        if (shouldAutoPlay && !isPlaying && currentSongIndex === 0 && currentTime === 0 && isMounted.current) {
             setIsPlaying(true);
         }
     }, [shouldAutoPlay]);
@@ -144,8 +154,10 @@ export default function MusicPlayer({ onPlaylistToggle, isPlaylistOpen = false, 
         // flip active
         activeRef.current = activeRef.current === 'A' ? 'B' : 'A';
         const nextIndex = getNextIndex(currentSongIndex);
-        setCurrentSongIndex(nextIndex);
-        setIsPlaying(true);
+        if (isMounted.current) {
+            setCurrentSongIndex(nextIndex);
+            setIsPlaying(true);
+        }
         // preload the one after that into the now-inactive element
         preloadNext(nextIndex);
     };
@@ -155,15 +167,19 @@ export default function MusicPlayer({ onPlaylistToggle, isPlaylistOpen = false, 
         if (!isPlaying && onPlay) {
             onPlay();
         }
-        setIsPlaying(!isPlaying);
+        if (isMounted.current) {
+            setIsPlaying(!isPlaying);
+        }
     };
 
     const playSong = (index: number) => {
         const active = getActive();
         if (active) active.oncanplay = null;
         loadInto(active, index);
-        setCurrentSongIndex(index);
-        setIsPlaying(true);
+        if (isMounted.current) {
+            setCurrentSongIndex(index);
+            setIsPlaying(true);
+        }
         preloadNext(index);
         if (onPlay) onPlay();
     };
@@ -177,18 +193,22 @@ export default function MusicPlayer({ onPlaylistToggle, isPlaylistOpen = false, 
         const active = getActive();
         if (active) active.oncanplay = null;
         loadInto(active, prevIdx);
-        setCurrentSongIndex(prevIdx);
-        setIsPlaying(true);
+        if (isMounted.current) {
+            setCurrentSongIndex(prevIdx);
+            setIsPlaying(true);
+        }
         preloadNext(prevIdx);
     };
 
     const toggleShuffle = () => {
-        setIsShuffle(!isShuffle);
+        if (isMounted.current) {
+            setIsShuffle(!isShuffle);
+        }
     };
 
     const handleTimeUpdate = () => {
         const active = getActive();
-        if (active) {
+        if (active && isMounted.current) {
             setCurrentTime(active.currentTime);
             setDuration(active.duration || 0);
         }
@@ -199,12 +219,16 @@ export default function MusicPlayer({ onPlaylistToggle, isPlaylistOpen = false, 
         const active = getActive();
         if (active) {
             active.currentTime = time;
-            setCurrentTime(time);
+            if (isMounted.current) {
+                setCurrentTime(time);
+            }
         }
     };
 
     const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setVolume(parseFloat(e.target.value));
+        if (isMounted.current) {
+            setVolume(parseFloat(e.target.value));
+        }
     };
 
     const handlePlaylistToggle = () => {

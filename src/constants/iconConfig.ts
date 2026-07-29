@@ -1,8 +1,8 @@
-import fileIcon from '../assets/fileicon.svg';
-import folderIcon from '../assets/folder.svg';
-import globeIcon from '../assets/Global.svg';
-import leocodesIcon from '../assets/leocodes_logo_bw_big.svg';
-import itunesIcon from '../assets/itunes-1.webp';
+import fileIcon from '../assets/ui/fileicon.svg';
+import folderIcon from '../assets/ui/folder.svg';
+import globeIcon from '../assets/ui/Global.svg';
+import leocodesIcon from '../assets/branding/leocodes_logo_bw_big.svg';
+import itunesIcon from '../assets/ui/itunes-1.webp';
 
 export interface IconState {
     id: string;

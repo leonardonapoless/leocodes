@@ -171,7 +171,7 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
         });
     };
 
-    const openImage = (imageUrl: string, title?: string) => {
+    const openImage = (imageUrl: string, title?: string, width?: number, height?: number, x?: number, y?: number) => {
         if (windows.imageViewer?.isOpen && !windows.imageViewer?.isActive) {
             playSound('wact');
         }
@@ -183,7 +183,11 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
                 isOpen: true,
                 isActive: true,
                 imageUrl,
-                title: title || 'Image Viewer'
+                title: title || 'Image Viewer',
+                width: width || 800,
+                height: height || 600,
+                x: x ?? newWindows.imageViewer.x,
+                y: y ?? newWindows.imageViewer.y
             };
             return newWindows;
         });
@@ -513,6 +517,7 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
                         onFocus={() => focusWindow('imageViewer')}
                         onPositionChange={(pos) => updateWindowPosition('imageViewer', pos)}
                         onSizeChange={(size) => updateWindowSize('imageViewer', size)}
+                        noPadding
                         style={{
                             top: windows.imageViewer.y,
                             left: windows.imageViewer.x,
@@ -523,11 +528,11 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
                         isMobile={isMobile}
                     >
                         {windows.imageViewer.imageUrl && (
-                            <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#000' }}>
+                            <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#000', overflow: 'hidden' }}>
                                 <img
                                     src={windows.imageViewer.imageUrl}
                                     alt={windows.imageViewer.title}
-                                    style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+                                    style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', display: 'block' }}
                                 />
                             </div>
                         )}

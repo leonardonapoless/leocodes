@@ -1,5 +1,6 @@
 import React from 'react';
-import trebleMakerImage from '../assets/treblemaker_demo.png';
+import trebleMakerImage from '../assets/demos/treblemaker_demo.png';
+import tippenDemoImage from '../assets/demos/tippen-demo.gif';
 
 export interface Project {
     name: string;
@@ -10,6 +11,8 @@ export interface Project {
     videoSize?: { width: number; height: number };
     videoPosition?: { x: number; y: number };
     demoImage?: string;
+    imageSize?: { width: number; height: number };
+    imagePosition?: { x: number; y: number };
 }
 
 export interface ProjectCategory {
@@ -57,6 +60,15 @@ const macosProjects: Project[] = [
         demoLink: '',
     },
     {
+        name: 'tippen',
+        technologies: ['C'],
+        description: <>A lightning-fast, ultra-lightweight text expander for macOS built with <i><b>C</b></i>.</>,
+        githubLink: 'https://github.com/leonardonapoless/tippen',
+        demoLink: '',
+        demoImage: tippenDemoImage,
+        imageSize: { width: 802, height: 418 }
+    },
+    {
         name: 'Blobber',
         technologies: ['Swift', 'Metal'],
         description: <>A simple <i><b>Metal</b></i> blob shader made for my Computer Graphics studies. It uses metaballs for a liquid effect, push it with the cursor or hit Space to interact with it and change its shape.</>,
@@ -72,7 +84,8 @@ const otherProjects: Project[] = [
         description: <>A simple high-shelf filter plugin built with <i><b>JUCE</b></i> and <i><b>C++</b></i>.</>,
         githubLink: 'https://github.com/leonardonapoless/treblemaker',
         demoLink: '',
-        demoImage: trebleMakerImage
+        demoImage: trebleMakerImage,
+        imageSize: { width: 1000, height: 780 }
     },
     {
         name: 'Relikd',

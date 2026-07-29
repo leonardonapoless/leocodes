@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
-import homeIcon from '../../assets/home.svg';
-import openURLIcon from '../../assets/pixelarrow.svg';
+import homeIcon from '../../assets/ui/home.svg';
+import openURLIcon from '../../assets/ui/pixelarrow.svg';
 
 interface BrowserProps {
     url: string;

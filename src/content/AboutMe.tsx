@@ -2,7 +2,7 @@
 const AboutMe = () => (
     <div>
         <div className="about-header">
-            <p><b>Hi, I'm Leonardo!</b></p>
+            <p><b>Hi, I'm Leo!</b></p>
             <p><i>-iOS Developer</i></p>
         </div>
         <p>I love building apps for the Apple ecosystem. I aim to make them fun and unique.</p>

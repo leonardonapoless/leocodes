@@ -1,25 +1,25 @@
 import React from 'react';
-import swiftIcon from '../assets/swift-96x96_2x.png';
-import swiftuiIcon from '../assets/swiftui-96x96_2x.png';
-import javaIcon from '../assets/java.svg';
-import javafxIcon from '../assets/javafxicon.png';
-import javascriptIcon from '../assets/javascript.svg';
-import htmlIcon from '../assets/html.svg';
-import cssIcon from '../assets/css.svg';
-import reactIcon from '../assets/react.svg';
-import viteIcon from '../assets/Vite.js.svg';
-import cppIcon from '../assets/cppIcon.svg';
-import juceIcon from '../assets/juceIcon.png';
-import metalIcon from '../assets/metalIcon.png';
-import openglIcon from '../assets/openglIcon.png';
-import typescriptIcon from '../assets/typescriptIcon.png';
-import sqliteIcon from '../assets/sqliteicon.png';
+import swiftIcon from '../assets/tech/languages/swift-96x96_2x.png';
+import swiftuiIcon from '../assets/tech/frameworks/swiftui-96x96_2x.png';
+import javaIcon from '../assets/tech/languages/java.svg';
+import javafxIcon from '../assets/tech/frameworks/javafxicon.png';
+import javascriptIcon from '../assets/tech/languages/javascript.svg';
+import htmlIcon from '../assets/tech/languages/html.svg';
+import cssIcon from '../assets/tech/languages/css.svg';
+import reactIcon from '../assets/tech/frameworks/react.svg';
+import cppIcon from '../assets/tech/languages/cppIcon.svg';
+import cIcon from '../assets/tech/languages/clang.svg';
+import juceIcon from '../assets/tech/frameworks/juceIcon.png';
+import metalIcon from '../assets/tech/frameworks/metalIcon.png';
+import openglIcon from '../assets/tech/frameworks/openglIcon.png';
+import typescriptIcon from '../assets/tech/languages/typescriptIcon.png';
+import sqliteIcon from '../assets/tech/database/sqliteicon.png';
 import { projectCategories, type Project } from './projectsData';
 
 interface ProjectsProps {
     onOpenVideo?: (videoId: string, title: string, width?: number, height?: number, x?: number, y?: number) => void;
     onOpenBrowser?: (url: string, title: string) => void;
-    onOpenImage?: (imageUrl: string, title: string) => void;
+    onOpenImage?: (imageUrl: string, title: string, width?: number, height?: number, x?: number, y?: number) => void;
 }
 
 const Projects = ({ onOpenVideo, onOpenBrowser, onOpenImage }: ProjectsProps) => {
@@ -69,7 +69,7 @@ const Projects = ({ onOpenVideo, onOpenBrowser, onOpenImage }: ProjectsProps) =>
         'HTML': { src: htmlIcon },
         'CSS': { src: cssIcon },
         'React': { src: reactIcon, filter: 'brightness(0) saturate(100%)' },
-        'Vite': { src: viteIcon },
+        'C': { src: cIcon, filter: 'none', style: { height: '26px' } },
         'C++': { src: cppIcon, filter: 'none', style: { height: '26px' } },
         'JUCE': { src: juceIcon, filter: 'none', style: { height: '25px' } },
         'Metal': { src: metalIcon, filter: 'none', style: { height: '28px' } },
@@ -128,11 +128,11 @@ const Projects = ({ onOpenVideo, onOpenBrowser, onOpenImage }: ProjectsProps) =>
                             {project.demoImage && (
                                 <li style={{ marginTop: '10px' }}>
                                     <div
-                                        onClick={() => onOpenImage && onOpenImage(project.demoImage!, project.name)}
+                                        onClick={() => onOpenImage && onOpenImage(project.demoImage!, project.name, project.imageSize?.width, project.imageSize?.height, project.imagePosition?.x, project.imagePosition?.y)}
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter' || e.key === ' ') {
                                                 e.preventDefault();
-                                                onOpenImage && onOpenImage(project.demoImage!, project.name);
+                                                onOpenImage && onOpenImage(project.demoImage!, project.name, project.imageSize?.width, project.imageSize?.height, project.imagePosition?.x, project.imagePosition?.y);
                                             }
                                         }}
                                         style={{ cursor: 'pointer', display: 'inline-block' }}

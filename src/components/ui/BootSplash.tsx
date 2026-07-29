@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import logo from '../../assets/leocodes_logo_bw_big.svg';
+import logo from '../../assets/branding/leocodes_logo_bw_big.svg';
 import bootChime from '../../assets/audio/StartupPowerMacPCI.wav';
 
 interface BootSplashProps {

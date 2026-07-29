@@ -1,7 +1,7 @@
 import Icon from '../components/ui/Icon';
-import doomIcon from '../assets/Doom-1-icon.png';
-import fileIcon from '../assets/fileicon.svg';
-import snakeIcon from '../assets/snake_icon.png';
+import doomIcon from '../assets/games/Doom-1-icon.png';
+import fileIcon from '../assets/ui/fileicon.svg';
+import snakeIcon from '../assets/games/snake_icon.png';
 
 interface GamesProps {
     onOpenDoom: () => void;

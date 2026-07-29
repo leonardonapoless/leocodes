@@ -137,7 +137,7 @@ textarea {
 
 .about-header {
   display: flex;
-  gap: 90px;
+  gap: 125px;
 }
 
 .skill-row-1 {
@@ -252,7 +252,7 @@ textarea {
   .mobile-layout .about-header {
     flex-direction: row !important;
     align-items: center !important;
-    gap: 30px !important;
+    gap: 50px !important;
     margin-bottom: 20px;
   }
 

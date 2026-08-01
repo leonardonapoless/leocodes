@@ -5,10 +5,11 @@ interface VideoPlayerProps {
     videoId: string;
     isMobile?: boolean;
     onPlay?: () => void;
+    onPause?: () => void;
     shouldPause?: boolean;
 }
 
-const VideoPlayer = ({ videoId, isMobile = false, onPlay, shouldPause = false }: VideoPlayerProps) => {
+const VideoPlayer = ({ videoId, isMobile = false, onPlay, onPause, shouldPause = false }: VideoPlayerProps) => {
     const playerRef = useRef<YT.Player | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [volume, setVolume] = useState(50);
@@ -19,10 +20,15 @@ const VideoPlayer = ({ videoId, isMobile = false, onPlay, shouldPause = false }:
     const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const onPlayRef = useRef(onPlay);
+    const onPauseRef = useRef(onPause);
 
     useEffect(() => {
         onPlayRef.current = onPlay;
     }, [onPlay]);
+
+    useEffect(() => {
+        onPauseRef.current = onPause;
+    }, [onPause]);
 
     useEffect(() => {
         if (shouldPause && isPlaying && playerRef.current) {
@@ -84,6 +90,8 @@ const VideoPlayer = ({ videoId, isMobile = false, onPlay, shouldPause = false }:
         if (event.data === 1) {
             setDuration(event.target.getDuration());
             if (onPlayRef.current) onPlayRef.current();
+        } else if (event.data === 0 || event.data === 2) {
+            if (onPauseRef.current) onPauseRef.current();
         }
     };
 

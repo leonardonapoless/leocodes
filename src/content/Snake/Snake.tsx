@@ -4,7 +4,6 @@ import { playSound } from '../../utils/soundManager';
 import * as S from './Snake.styles';
 
 const GRID_SIZE = 20;
-const SPEED = 130;
 
 const INITIAL_SNAKE = [{ x: 10, y: 10 }, { x: 10, y: 11 }, { x: 10, y: 12 }];
 const INITIAL_DIR = { x: 0, y: -1 };

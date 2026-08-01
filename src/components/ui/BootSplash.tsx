@@ -21,7 +21,11 @@ const BootSplash = ({ onComplete }: BootSplashProps) => {
         const timer = setTimeout(() => {
             setShowContent(true);
         }, 1000);
-        return () => clearTimeout(timer);
+        return () => {
+            clearTimeout(timer);
+            audio.pause();
+            audio.src = '';
+        };
     }, []);
 
     const startBoot = () => {
@@ -30,7 +34,7 @@ const BootSplash = ({ onComplete }: BootSplashProps) => {
         const audio = audioRef.current;
         if (!audio) return;
 
-        audio.play();
+        audio.play().catch(() => {});
 
         setTimeout(() => {
             setIsVisible(false);

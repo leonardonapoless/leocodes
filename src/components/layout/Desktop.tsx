@@ -38,6 +38,10 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
         setActiveMedia('video');
     }, []);
 
+    const handleVideoPause = useCallback(() => {
+        setActiveMedia(prev => prev === 'video' ? 'none' : prev);
+    }, []);
+
     const handleMusicPlay = useCallback(() => {
         setActiveMedia('music');
     }, []);
@@ -120,9 +124,6 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
 
 
     const openWindow = (key: string) => {
-        if (windows[key]?.isOpen && !windows[key]?.isActive) {
-            playSound('wact');
-        }
         setWindows(prev => {
             const newWindows = { ...prev };
             Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
@@ -132,9 +133,6 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
     };
 
     const openVideo = (videoId: string, title?: string, width?: number, height?: number, x?: number, y?: number) => {
-        if (windows.video?.isOpen && !windows.video?.isActive) {
-            playSound('wact');
-        }
         setWindows(prev => {
             const newWindows = { ...prev };
             Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
@@ -154,9 +152,6 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
     };
 
     const openBrowser = (url: string, title?: string) => {
-        if (windows.browser?.isOpen && !windows.browser?.isActive) {
-            playSound('wact');
-        }
         setWindows(prev => {
             const newWindows = { ...prev };
             Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
@@ -172,9 +167,6 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
     };
 
     const openImage = (imageUrl: string, title?: string, width?: number, height?: number, x?: number, y?: number) => {
-        if (windows.imageViewer?.isOpen && !windows.imageViewer?.isActive) {
-            playSound('wact');
-        }
         setWindows(prev => {
             const newWindows = { ...prev };
             Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
@@ -194,9 +186,6 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
     };
 
     const openDoom = () => {
-        if (windows.doom?.isOpen && !windows.doom?.isActive) {
-            playSound('wact');
-        }
         setWindows(prev => {
             const newWindows = { ...prev };
             Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
@@ -210,9 +199,6 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
     };
 
     const openDoomManual = () => {
-        if (windows.doomManual?.isOpen && !windows.doomManual?.isActive) {
-            playSound('wact');
-        }
         setWindows(prev => {
             const newWindows = { ...prev };
             Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
@@ -226,9 +212,6 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
     };
 
     const openSnake = () => {
-        if (windows.snake?.isOpen && !windows.snake?.isActive) {
-            playSound('wact');
-        }
         setWindows(prev => {
             const newWindows = { ...prev };
             Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
@@ -248,9 +231,6 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
     };
 
     const focusWindow = (key: string) => {
-        if (windows[key]?.isOpen && !windows[key]?.isActive) {
-            playSound('wact');
-        }
         setWindows(prev => {
             const newWindows = { ...prev };
             Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
@@ -478,6 +458,7 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
                             videoId={windows.video.videoId}
                             isMobile={isMobile}
                             onPlay={handleVideoPlay}
+                            onPause={handleVideoPause}
                             shouldPause={activeMedia === 'music'}
                         />}
                     </Window>

@@ -1,4 +1,4 @@
-import { ChangeEvent } from 'react';
+import { ChangeEvent, memo } from 'react';
 import './MusicPlayer.css';
 
 export interface Song {
@@ -30,6 +30,49 @@ interface MusicPlayerUIProps {
     onSongSelect: (index: number) => void;
     formatTime: (time: number) => string;
 }
+
+const PlaylistTable = memo(({
+    playlist,
+    currentSongIndex,
+    onSongSelect
+}: {
+    playlist: Song[];
+    currentSongIndex: number;
+    onSongSelect: (index: number) => void;
+}) => {
+    return (
+        <div className="playlist-container">
+            <table className="playlist-table">
+                <tbody>
+                    {playlist.map((song, index) => {
+                        const isSelected = currentSongIndex === index;
+                        const rowClass = isSelected ? 'selected' : (index % 2 === 0 ? 'even' : 'odd');
+
+                        return (
+                            <tr
+                                key={song.id}
+                                onClick={() => onSongSelect(index)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        onSongSelect(index);
+                                    }
+                                }}
+                                className={`playlist-row ${rowClass}`}
+                                role="button"
+                                tabIndex={0}
+                            >
+                                <td className="playlist-cell-index">{index + 1}.</td>
+                                <td className="playlist-cell-title">{song.title}</td>
+                                <td className="playlist-cell-artist">{song.artist}</td>
+                            </tr>
+                        );
+                    })}
+                </tbody>
+            </table>
+        </div>
+    );
+});
 
 export default function MusicPlayerUI({
     currentSong,
@@ -165,36 +208,11 @@ export default function MusicPlayerUI({
             </div>
 
             {isPlaylistOpen && (
-                <div className="playlist-container">
-                    <table className="playlist-table">
-                        <tbody>
-                            {playlist.map((song, index) => {
-                                const isSelected = currentSongIndex === index;
-                                const rowClass = isSelected ? 'selected' : (index % 2 === 0 ? 'even' : 'odd');
-
-                                return (
-                                    <tr
-                                        key={index}
-                                        onClick={() => onSongSelect(index)}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter' || e.key === ' ') {
-                                                e.preventDefault();
-                                                onSongSelect(index);
-                                            }
-                                        }}
-                                        className={`playlist-row ${rowClass}`}
-                                        role="button"
-                                        tabIndex={0}
-                                    >
-                                        <td className="playlist-cell-index">{index + 1}.</td>
-                                        <td className="playlist-cell-title">{song.title}</td>
-                                        <td className="playlist-cell-artist">{song.artist}</td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
-                </div>
+                <PlaylistTable
+                    playlist={playlist}
+                    currentSongIndex={currentSongIndex}
+                    onSongSelect={onSongSelect}
+                />
             )}
         </div>
     );

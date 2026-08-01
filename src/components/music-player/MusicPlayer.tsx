@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import playlistData from '../../content/playlist.json';
 import MusicPlayerUI, { Song } from './MusicPlayerUI';
 
@@ -10,13 +10,35 @@ interface MusicPlayerProps {
     onPlay?: () => void;
 }
 
-function shuffleArray<T>(array: T[]): T[] {
-    const newArray = [...array];
-    for (let i = newArray.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+function balancedShuffle(playlist: Song[], indices: number[]): number[] {
+    let tallies: Record<string, number> = {};
+    let currentPos: Record<string, number> = {};
+
+    for (let i = 0; i < indices.length; i++) {
+        let indexVal = indices[i];
+        let band = playlist[indexVal]?.artist || 'idk';
+        tallies[band] = (tallies[band] || 0) + 1;
+        currentPos[band] = 0;
     }
-    return newArray;
+
+    let tmp = [];
+    for (let i = 0; i < indices.length; i++) {
+        let indexVal = indices[i];
+        let band = playlist[indexVal]?.artist || 'idk';
+        let tot = tallies[band];
+        let curr = currentPos[band];
+        currentPos[band]++;
+        
+        tmp.push({ indexVal: indexVal, sc: (curr + Math.random()) / tot });
+    }
+
+    tmp.sort((a, b) => a.sc - b.sc);
+    
+    let res = [];
+    for(let k=0; k<tmp.length; k++) {
+        res.push(tmp[k].indexVal);
+    }
+    return res;
 }
 
 export default function MusicPlayer({ onPlaylistToggle, isPlaylistOpen = false, shouldAutoPlay = false, shouldPause = false, onPlay }: MusicPlayerProps) {
@@ -31,6 +53,7 @@ export default function MusicPlayer({ onPlaylistToggle, isPlaylistOpen = false, 
     const [isShuffle, setIsShuffle] = useState(false);
     const [shuffledIndices, setShuffledIndices] = useState<number[]>([]);
     const isMounted = useRef(true);
+    const pausedByExternal = useRef(false);
 
     const playlist: Song[] = playlistData as Song[];
     const currentSong = playlist[currentSongIndex];
@@ -58,7 +81,7 @@ export default function MusicPlayer({ onPlaylistToggle, isPlaylistOpen = false, 
     const loadInto = (el: HTMLAudioElement | null, index: number) => {
         if (!el) return;
         const url = playlist[index]?.previewUrl;
-        if (url) {
+        if (url && !el.src.endsWith(url)) {
             el.src = url;
             el.load();
         }
@@ -79,14 +102,31 @@ export default function MusicPlayer({ onPlaylistToggle, isPlaylistOpen = false, 
     useEffect(() => {
         if (isShuffle && isMounted.current) {
             const indices = Array.from({ length: playlist.length }, (_, i) => i);
-            setShuffledIndices(shuffleArray(indices));
+            const shuffled = balancedShuffle(playlist, indices);
+            const currentPos = shuffled.indexOf(currentSongIndex);
+            if (currentPos > 0) {
+                [shuffled[0], shuffled[currentPos]] = [shuffled[currentPos], shuffled[0]];
+            }
+            setShuffledIndices(shuffled);
         }
     }, [isShuffle, playlist.length]);
 
+    useEffect(() => {
+        if (isMounted.current) {
+            preloadNext(currentSongIndex);
+        }
+    }, [isShuffle, shuffledIndices]);
+
     // handle external pause
     useEffect(() => {
-        if (shouldPause && isPlaying && isMounted.current) {
-            setIsPlaying(false);
+        if (shouldPause) {
+            if (isPlaying && isMounted.current) {
+                pausedByExternal.current = true;
+                setIsPlaying(false);
+            }
+        } else if (pausedByExternal.current && isMounted.current) {
+            pausedByExternal.current = false;
+            setIsPlaying(true);
         }
     }, [shouldPause, isPlaying]);
 
@@ -146,19 +186,12 @@ export default function MusicPlayer({ onPlaylistToggle, isPlaylistOpen = false, 
             active.currentTime = 0;
         }
 
-        const next = getNext();
-        if (next) {
-            next.volume = volume;
-            next.play().catch(() => {});
-        }
-        // flip active
         activeRef.current = activeRef.current === 'A' ? 'B' : 'A';
         const nextIndex = getNextIndex(currentSongIndex);
         if (isMounted.current) {
             setCurrentSongIndex(nextIndex);
             setIsPlaying(true);
         }
-        // preload the one after that into the now-inactive element
         preloadNext(nextIndex);
     };
 
@@ -172,7 +205,7 @@ export default function MusicPlayer({ onPlaylistToggle, isPlaylistOpen = false, 
         }
     };
 
-    const playSong = (index: number) => {
+    const playSong = useCallback((index: number) => {
         const active = getActive();
         if (active) active.oncanplay = null;
         loadInto(active, index);
@@ -182,7 +215,7 @@ export default function MusicPlayer({ onPlaylistToggle, isPlaylistOpen = false, 
         }
         preloadNext(index);
         if (onPlay) onPlay();
-    };
+    }, [onPlay]);
 
     const nextSong = () => {
         handleEnded();

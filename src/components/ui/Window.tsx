@@ -124,13 +124,19 @@ const Window = ({ id, title, children, onClose, isOpen, style, isActive, onFocus
         };
     }, [isDragging, isResizing, onPositionChange, onSizeChange]);
 
-    const prevIsOpen = useRef(isOpen);
+    const prevIsOpen = useRef(false);
+    const prevIsActive = useRef(false);
+
     useEffect(() => {
         if (isOpen && !prevIsOpen.current) {
             playSound('wopn');
+        } else if (isOpen && isActive && !prevIsActive.current) {
+            playSound('wact');
         }
         prevIsOpen.current = isOpen;
-    }, [isOpen]);
+        prevIsActive.current = isActive;
+    }, [isOpen, isActive]);
+
 
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const scrollTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
@@ -143,11 +149,25 @@ const Window = ({ id, title, children, onClose, isOpen, style, isActive, onFocus
         };
     }, []);
 
+    const stopScrollSound = () => {
+        if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+        if (isScrollSoundPlaying.current) {
+            stopSound('sbth');
+            playSound('sbth_decay');
+            isScrollSoundPlaying.current = false;
+        }
+    };
+
+    useEffect(() => {
+        if (!isActive && isScrollSoundPlaying.current) {
+            stopScrollSound();
+        }
+    }, [isActive]);
+
     const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
         const target = e.target as HTMLDivElement;
         if (target.scrollHeight <= target.clientHeight) return;
-
-        target.classList.add('scrolling');
+        if (!isActive) return;
 
         if (!isScrollSoundPlaying.current) {
             isScrollSoundPlaying.current = true;
@@ -158,10 +178,7 @@ const Window = ({ id, title, children, onClose, isOpen, style, isActive, onFocus
         if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
 
         scrollTimeoutRef.current = setTimeout(() => {
-            target.classList.remove('scrolling');
-            stopSound('sbth');
-            playSound('sbth_decay');
-            isScrollSoundPlaying.current = false;
+            stopScrollSound();
         }, 150);
     };
 

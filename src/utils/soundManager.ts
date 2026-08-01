@@ -54,7 +54,6 @@ let ctx: AudioContext | null = null;
 const soundBuffers: Record<string, AudioBuffer> = {};
 const rawBuffers: Record<string, ArrayBuffer> = {};
 const activeSources: Record<string, { source: AudioBufferSourceNode; gain: GainNode }> = {};
-let activeCount = 0;
 
 const getCtx = () => {
     if (!ctx) ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -65,6 +64,7 @@ const ensureDecoded = async (ac: AudioContext, name: string) => {
     if (!soundBuffers[name] && rawBuffers[name]) {
         const bufferCopy = rawBuffers[name].slice(0);
         soundBuffers[name] = await ac.decodeAudioData(bufferCopy);
+        delete rawBuffers[name];
     }
 };
 
@@ -76,7 +76,13 @@ export const stopSound = (name: string) => {
     }
 };
 
+const lastPlayed: Record<string, number> = {};
+
 export const playSound = async (name: string, { exclusive = false, loop = false, loopEnd = 0 } = {}) => {
+    const now = Date.now();
+    if (lastPlayed[name] && now - lastPlayed[name] < 50) return;
+    lastPlayed[name] = now;
+
     const ac = getCtx();
     if (ac.state === 'suspended') await ac.resume();
 
@@ -102,18 +108,13 @@ export const playSound = async (name: string, { exclusive = false, loop = false,
     const handleEnded = () => {
         if (ended) return;
         ended = true;
-        activeCount--;
-        if (exclusive) {
+        if (exclusive && activeSources[name]?.source === source) {
             delete activeSources[name];
-        }
-        if (activeCount <= 0) {
-            activeCount = 0;
         }
     };
     source.onended = handleEnded;
 
     source.start(0);
-    activeCount++;
 
     if (exclusive) {
         activeSources[name] = { source, gain };
@@ -143,9 +144,11 @@ export const cleanup = async () => {
         } catch (_) {}
         ctx = null;
     }
-    activeCount = 0;
     for (const key in soundBuffers) {
         delete soundBuffers[key];
+    }
+    for (const key in rawBuffers) {
+        delete rawBuffers[key];
     }
 };
 

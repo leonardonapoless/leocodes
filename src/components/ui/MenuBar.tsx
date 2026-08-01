@@ -28,7 +28,7 @@ const MenuBar = ({ onOpenWindow, onCrash }: MenuBarProps) => {
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [activeMenu]);
 
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 

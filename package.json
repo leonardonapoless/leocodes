@@ -13,8 +13,8 @@
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
     "@sakun/system.css": "^0.1.11",
-    "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

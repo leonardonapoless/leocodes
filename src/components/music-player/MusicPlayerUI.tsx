@@ -1,4 +1,5 @@
 import { ChangeEvent, memo } from 'react';
+import { playSound } from '../../utils/soundManager';
 import './MusicPlayer.css';
 
 export interface Song {
@@ -149,6 +150,8 @@ export default function MusicPlayerUI({
                         <button
                             className={`retro-btn retro-btn-large ${isShuffle ? 'pressed' : ''}`}
                             onClick={onToggleShuffle}
+                            onMouseDown={() => playSound('btnp')}
+                            onMouseUp={() => playSound('btnr')}
                             title="Shuffle"
                         >
                             Shuffle
@@ -156,6 +159,8 @@ export default function MusicPlayerUI({
                         <button
                             className="retro-btn retro-btn-text"
                             onClick={onPrev}
+                            onMouseDown={() => playSound('btnp')}
+                            onMouseUp={() => playSound('btnr')}
                             title="Previous"
                         >
                             Prev
@@ -163,6 +168,8 @@ export default function MusicPlayerUI({
                         <button
                             className="retro-btn retro-btn-large"
                             onClick={onTogglePlay}
+                            onMouseDown={() => playSound('btnp')}
+                            onMouseUp={() => playSound('btnr')}
                             title={isPlaying ? "Pause" : "Play"}
                         >
                             {isPlaying ? 'Pause' : 'Play'}
@@ -170,6 +177,8 @@ export default function MusicPlayerUI({
                         <button
                             className="retro-btn retro-btn-text"
                             onClick={onNext}
+                            onMouseDown={() => playSound('btnp')}
+                            onMouseUp={() => playSound('btnr')}
                             title="Next"
                         >
                             Next
@@ -179,6 +188,8 @@ export default function MusicPlayerUI({
                     <button
                         className="retro-btn playlist-toggle-btn"
                         onClick={onPlaylistToggle}
+                        onMouseDown={() => playSound('btnp')}
+                        onMouseUp={() => playSound('btnr')}
                         title={isPlaylistOpen ? "Hide Playlist" : "Show Playlist"}
                     >
                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">

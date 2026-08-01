@@ -88,6 +88,14 @@ const lastPlayed: Record<string, number> = {};
 export const playSound = async (name: string, { exclusive = false, loop = false, loopEnd = 0 } = {}) => {
     const now = Date.now();
     if (lastPlayed[name] && now - lastPlayed[name] < 50) return;
+    
+    if (name === 'wact') {
+        const suppressors = ['btnp', 'sbap', 'sbtp', 'sbth_attack', 'mnuo', 'mnus'];
+        if (suppressors.some(s => lastPlayed[s] && now - lastPlayed[s] < 150)) {
+            return;
+        }
+    }
+    
     lastPlayed[name] = now;
 
     const ac = getCtx();

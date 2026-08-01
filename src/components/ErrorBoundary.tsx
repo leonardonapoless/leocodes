@@ -1,4 +1,5 @@
 import React from 'react';
+import { playSound } from '../utils/soundManager';
 
 interface ErrorBoundaryProps {
     children: React.ReactNode;
@@ -75,6 +76,8 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
                             <button
                                 className="btn"
                                 onClick={this.handleRestart}
+                                onMouseDown={() => playSound('btnp')}
+                                onMouseUp={() => playSound('btnr')}
                                 style={{ minWidth: '80px' }}
                             >
                                 Restart

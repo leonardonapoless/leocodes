@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { playSound } from '../../utils/soundManager';
 
 interface MobileNavButtonProps {
     targetId: string | null;
@@ -30,6 +31,8 @@ const MobileNavButton = ({ targetId }: MobileNavButtonProps) => {
     return (
         <button
             onClick={handleAction}
+            onMouseDown={() => playSound('btnp')}
+            onMouseUp={() => playSound('btnr')}
             className="btn"
             style={{
                 position: 'fixed',

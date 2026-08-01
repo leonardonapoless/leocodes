@@ -125,8 +125,10 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
 
     const openWindow = (key: string) => {
         setWindows(prev => {
-            const newWindows = { ...prev };
-            Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
+            const newWindows = {} as Record<string, WindowState>;
+            Object.keys(prev).forEach(k => {
+                newWindows[k] = { ...prev[k], isActive: false };
+            });
             newWindows[key] = { ...newWindows[key], isOpen: true, isActive: true };
             return newWindows;
         });
@@ -134,8 +136,10 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
 
     const openVideo = (videoId: string, title?: string, width?: number, height?: number, x?: number, y?: number) => {
         setWindows(prev => {
-            const newWindows = { ...prev };
-            Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
+            const newWindows = {} as Record<string, WindowState>;
+            Object.keys(prev).forEach(k => {
+                newWindows[k] = { ...prev[k], isActive: false };
+            });
             newWindows.video = {
                 ...newWindows.video,
                 isOpen: true,
@@ -153,8 +157,10 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
 
     const openBrowser = (url: string, title?: string) => {
         setWindows(prev => {
-            const newWindows = { ...prev };
-            Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
+            const newWindows = {} as Record<string, WindowState>;
+            Object.keys(prev).forEach(k => {
+                newWindows[k] = { ...prev[k], isActive: false };
+            });
             newWindows.browser = {
                 ...newWindows.browser,
                 isOpen: true,
@@ -168,8 +174,10 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
 
     const openImage = (imageUrl: string, title?: string, width?: number, height?: number, x?: number, y?: number) => {
         setWindows(prev => {
-            const newWindows = { ...prev };
-            Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
+            const newWindows = {} as Record<string, WindowState>;
+            Object.keys(prev).forEach(k => {
+                newWindows[k] = { ...prev[k], isActive: false };
+            });
             newWindows.imageViewer = {
                 ...newWindows.imageViewer,
                 isOpen: true,
@@ -187,8 +195,10 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
 
     const openDoom = () => {
         setWindows(prev => {
-            const newWindows = { ...prev };
-            Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
+            const newWindows = {} as Record<string, WindowState>;
+            Object.keys(prev).forEach(k => {
+                newWindows[k] = { ...prev[k], isActive: false };
+            });
             newWindows.doom = {
                 ...newWindows.doom,
                 isOpen: true,
@@ -200,8 +210,10 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
 
     const openDoomManual = () => {
         setWindows(prev => {
-            const newWindows = { ...prev };
-            Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
+            const newWindows = {} as Record<string, WindowState>;
+            Object.keys(prev).forEach(k => {
+                newWindows[k] = { ...prev[k], isActive: false };
+            });
             newWindows.doomManual = {
                 ...newWindows.doomManual,
                 isOpen: true,
@@ -213,8 +225,10 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
 
     const openSnake = () => {
         setWindows(prev => {
-            const newWindows = { ...prev };
-            Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
+            const newWindows = {} as Record<string, WindowState>;
+            Object.keys(prev).forEach(k => {
+                newWindows[k] = { ...prev[k], isActive: false };
+            });
             newWindows.snake = {
                 ...newWindows.snake,
                 isOpen: true,
@@ -232,9 +246,10 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
 
     const focusWindow = (key: string) => {
         setWindows(prev => {
-            const newWindows = { ...prev };
-            Object.keys(newWindows).forEach(k => newWindows[k].isActive = false);
-            newWindows[key].isActive = true;
+            const newWindows = {} as Record<string, WindowState>;
+            Object.keys(prev).forEach(k => {
+                newWindows[k] = { ...prev[k], isActive: k === key };
+            });
             return newWindows;
         });
     };
@@ -272,6 +287,9 @@ const Desktop = ({ isBooted = true }: DesktopProps) => {
 
             default:
                 if (icon.windowKey) {
+                    if (icon.iconSrc && icon.iconSrc.includes('folder')) {
+                        playSound('flap');
+                    }
                     openWindow(icon.windowKey);
                 }
                 break;

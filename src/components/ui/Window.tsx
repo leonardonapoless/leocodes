@@ -126,12 +126,16 @@ const Window = ({ id, title, children, onClose, isOpen, style, isActive, onFocus
 
     const prevIsOpen = useRef(false);
     const prevIsActive = useRef(false);
+    const skipFocusSoundRef = useRef(false);
 
     useEffect(() => {
         if (isOpen && !prevIsOpen.current) {
             playSound('wopn');
         } else if (isOpen && isActive && !prevIsActive.current) {
-            playSound('wact');
+            if (!skipFocusSoundRef.current) {
+                playSound('wact');
+            }
+            skipFocusSoundRef.current = false;
         }
         prevIsOpen.current = isOpen;
         prevIsActive.current = isActive;
@@ -249,8 +253,15 @@ const Window = ({ id, title, children, onClose, isOpen, style, isActive, onFocus
                 display: 'flex',
                 flexDirection: 'column'
             }}
-            onClick={() => {
-                onFocus();
+            onClick={(e) => {
+                if (!isActive) {
+                    const target = e.target as HTMLElement;
+                    const isInteractive = target.closest('button, a, input, select, textarea, summary, details, label, [role="button"], .interactive-element');
+                    if (isInteractive) {
+                        skipFocusSoundRef.current = true;
+                    }
+                    onFocus();
+                }
             }}
         >
             <div

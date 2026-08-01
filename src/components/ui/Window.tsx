@@ -124,8 +124,8 @@ const Window = ({ id, title, children, onClose, isOpen, style, isActive, onFocus
         };
     }, [isDragging, isResizing, onPositionChange, onSizeChange]);
 
-    const prevIsOpen = useRef(false);
-    const prevIsActive = useRef(false);
+    const prevIsOpen = useRef(isOpen);
+    const prevIsActive = useRef(isActive);
     const skipFocusSoundRef = useRef(false);
 
     useEffect(() => {

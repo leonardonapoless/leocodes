@@ -34,14 +34,22 @@ const BootSplash = ({ onComplete }: BootSplashProps) => {
         initAudioContext();
 
         const audio = audioRef.current;
-        if (!audio) return;
-
-        audio.play().catch(() => {});
-
-        setTimeout(() => {
+        if (!audio) {
             setIsVisible(false);
             setTimeout(onComplete, 500);
-        }, 2000);
+            return;
+        }
+
+        const finishBoot = () => {
+            setIsVisible(false);
+            setTimeout(onComplete, 500);
+        };
+
+        audio.onended = finishBoot;
+
+        audio.play().catch(() => {
+            finishBoot();
+        });
     };
 
     return (

@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import logo from '../../assets/branding/leocodes_logo_bw_big.svg';
 import bootChime from '../../assets/audio/StartupPowerMacPCI.wav';
+import { initAudioContext } from '../../utils/soundManager';
 
 interface BootSplashProps {
     onComplete: () => void;
@@ -30,6 +31,7 @@ const BootSplash = ({ onComplete }: BootSplashProps) => {
 
     const startBoot = () => {
         setHasStarted(true);
+        initAudioContext();
 
         const audio = audioRef.current;
         if (!audio) return;

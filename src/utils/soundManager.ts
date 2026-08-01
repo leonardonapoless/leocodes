@@ -60,6 +60,13 @@ const getCtx = () => {
     return ctx;
 };
 
+export const initAudioContext = () => {
+    const ac = getCtx();
+    if (ac.state === 'suspended') {
+        ac.resume().catch(() => {});
+    }
+};
+
 const ensureDecoded = async (ac: AudioContext, name: string) => {
     if (!soundBuffers[name] && rawBuffers[name]) {
         const bufferCopy = rawBuffers[name].slice(0);
